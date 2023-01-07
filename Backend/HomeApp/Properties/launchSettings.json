@@ -11,7 +11,7 @@
     "kestrel": {
       "commandName": "Project",
       "nativeDebugging": true,
-      "applicationUrl": "http://localhost:5000",
+      "applicationUrl": "http://0.0.0.0:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
