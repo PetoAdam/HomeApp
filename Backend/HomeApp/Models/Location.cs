@@ -7,6 +7,18 @@ namespace HomeApp.Models
 {
     public class Location
     {
+
+        public Location(Dal.Location location)
+        {
+            Id = location.Id;
+            Country = location.Country;
+            ZipCode = location.ZipCode;
+            City = location.City;
+            Street = location.Street;
+            Number = location.Number;
+            Description = location.Description;
+        }
+
         public Location(int id, string country, string zipCode, string city, string street, string number, string description)
         {
             Id = id;

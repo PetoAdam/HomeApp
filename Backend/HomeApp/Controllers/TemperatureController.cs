@@ -20,8 +20,16 @@ namespace HomeApp.Controllers
             this._context = dbContext;
         }
 
+        [HttpGet("current")]
+        public async Task<ActionResult<Models.Temperature>> GetCurrent()
+        {
+            var dbTemp = await _context.Temperatures.FirstOrDefaultAsync(t => t.Timestamp == _context.Temperatures.Max(x => x.Timestamp));
+            var location = _context.Locations.FirstOrDefault(l => l.Id == dbTemp.LocationId);
+            return new Models.Temperature(dbTemp.Id, dbTemp.Value, dbTemp.Timestamp, new Models.Location(location));
+        }
+
         [HttpGet("day")]
-        public async Task<ActionResult<Models.Temperature[]>> List(){
+        public async Task<ActionResult<Models.Temperature[]>> ListDay(){
             var dbTemps = await _context.Temperatures.ToListAsync();
             var sortedTemps = dbTemps.Where(t => t.Timestamp > DateTime.Now.AddHours(-24) && t.Timestamp < DateTime.Now);
 
@@ -29,8 +37,7 @@ namespace HomeApp.Controllers
             foreach(var temp in sortedTemps)
             {
                 var location = _context.Locations.FirstOrDefault(l => l.Id == temp.LocationId);
-                var locationModel = new Models.Location(location.Id, location.Country, location.ZipCode, location.City, location.Street, location.Number, location.Description);
-                temps.Add(new Models.Temperature(temp.Id, temp.Value, temp.Timestamp, locationModel));
+                temps.Add(new Models.Temperature(temp.Id, temp.Value, temp.Timestamp, new Models.Location(location)));
             }
             return temps.ToArray();
         }
