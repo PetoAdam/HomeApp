@@ -19,6 +19,9 @@ namespace HomeApp
     public class Startup
     {
 
+        // currently using CORS to be able to call requests during development.
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -27,7 +30,16 @@ namespace HomeApp
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
+        {   
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.AllowAnyOrigin();
+                                  });
+            });
+
             services.AddControllers().AddNewtonsoftJson();
             services.AddDbContext<Dal.ApplicationDbContext>();
 
@@ -42,6 +54,7 @@ namespace HomeApp
             }
 
             app.UseRouting();
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
