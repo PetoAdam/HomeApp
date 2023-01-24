@@ -25,6 +25,8 @@ with serial.Serial("/dev/ttyACM0", 9600) as ser:
             "Value": temp,
             "LocationId": 1
         }
+
+        # Only send every 30th data to the backend server - we dont need more
         if(iteration >= 30):
             # Send the POST request to the API
             response = requests.post("http://localhost:5001/api/temperatures", json=post_data, headers=headers)

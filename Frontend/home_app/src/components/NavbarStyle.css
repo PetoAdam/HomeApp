@@ -1,0 +1,122 @@
+.navbar {
+    /* Add some padding and a background color */
+    padding: 20px;
+    background: linear-gradient(to bottom, #4caf50, #43a047);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    /* Center the menu items horizontally */
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    z-index: 2; /* Make sure the navbar is always on top */
+}
+
+.navbar-left{
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: left; /* align elements to the left */
+}
+
+
+.navbar-middle {
+    display: flex;
+    flex: 3;
+    align-items: center;
+    justify-content: center; /* align elements in the center */
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.navbar-right {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: left; /* align elements in the center */
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+}
+
+
+.navbar-text {
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+}
+
+  
+/* Style the hamburger menu button */
+.hamburger-menu {
+    /* Add some padding and a cursor */
+    padding: 10px;
+    cursor: pointer;
+    justify-content: center;
+    /* Add a transition for the rotation */
+    transition: transform 0.3s ease;
+}
+
+/* Rotate the hamburger menu button by 90 degrees when the "rotate" class is present */
+.hamburger-menu.rotate {
+    transform: rotate(90deg);
+}
+  
+.bar1, .bar2, .bar3 {
+    width: 35px;
+    height: 5px;
+    background: #36393e;
+    margin: 6px 0;
+    transition: 0.4s;
+}
+
+/* Change the styles of the bars on hover */
+.hamburger-menu:hover .bar1, .hamburger-menu:hover .bar2, .hamburger-menu:hover .bar3 {
+    background-color: #36393e; /* light gray color */
+}
+
+.nav-menu {
+    /* Set the menu to be offscreen by default */
+    position: fixed;
+    left: -100%; /* Move the menu offscreen */
+    width: 60%;
+    height: 100%;
+    background-color: #36393e; /* light gray color */
+    transition: left 0.3s ease-out;
+    z-index: 1; /* Make sure the menu is behind the navbar */
+    margin-top: 60px;
+}
+    
+/* Move the menu onscreen when the "open" class is present */
+.navbar.open .nav-menu {
+    left: 0;
+    width: 60%;
+}
+
+img {
+    width: 50px;
+    height: 50px;
+}
+
+li {
+    padding: 10px;
+    font-size: 18px;
+    background-color: #43a047;
+    color: #36393e;
+    cursor: pointer;
+}
+    
+li:hover {
+    background-color: #4caf50;
+}
+
+a {
+    text-decoration: none; /* Remove underline */
+    color: #36393e; /* Change color of text */
+}
+
+  
+  
