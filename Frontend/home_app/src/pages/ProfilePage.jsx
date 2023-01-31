@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 import './ProfilePageStyle.css';
 
 const ProfilePage = () => {
   const location = useLocation();
   const [token, setToken] = useState(null);
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState([]);
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -44,11 +45,11 @@ const ProfilePage = () => {
           <p>The user is: {userInfo.userName}</p>
         </div>
       ) : (
-        <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=343546592830-dnjbabc9apodjc7q4kugaorq4iiti4ci.apps.googleusercontent.com&redirect_uri=http://petonet.ddns.net:5001/api/users/auth&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email&response_type=code">
-          Sign in with Google
-        </a>
+        <GoogleLoginButton>
+        </GoogleLoginButton>
       )}
     </div>
+
   );
 };
 
