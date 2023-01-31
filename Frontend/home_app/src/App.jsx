@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import TemperatureCard from './components/TemperatureCard';
-import LineChart from './components/LineChart';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import DetailsPage from './pages/DetailsPage';
+import ProfilePage from './pages/ProfilePage';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -16,8 +16,10 @@ const App = () => {
     <Router>
       <Navbar toggleMenu={toggleMenu} menuOpen={menuOpen} />
       {menuOpen && <div className="backdrop" onClick={toggleMenu} />}
-      <TemperatureCard className="temperature-card" />
-      <LineChart />
+      <Routes>
+        <Route exact path="" element={<DetailsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Routes>
     </Router>
   );
 };

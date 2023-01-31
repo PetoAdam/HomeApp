@@ -10,7 +10,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 50px;
+    height: 30px;
     z-index: 2; /* Make sure the navbar is always on top */
 }
 
@@ -70,7 +70,7 @@
     height: 5px;
     background: #36393e;
     margin: 6px 0;
-    transition: 0.4s;
+    transition: 0.3s;
 }
 
 /* Change the styles of the bars on hover */
@@ -87,13 +87,24 @@
     background-color: #36393e; /* light gray color */
     transition: left 0.3s ease-out;
     z-index: 1; /* Make sure the menu is behind the navbar */
-    margin-top: 60px;
+    margin-top: 50px;
 }
     
 /* Move the menu onscreen when the "open" class is present */
 .navbar.open .nav-menu {
     left: 0;
     width: 60%;
+}
+
+/* Use a media query to set the hamburger menu to slide in 30% on widescreen displays */
+@media only screen and (min-width: 800px) {
+    .navbar.open .nav-menu {
+        width: 30%;
+    }
+
+    .nav-menu {
+        width: 30%;
+    }
 }
 
 img {
