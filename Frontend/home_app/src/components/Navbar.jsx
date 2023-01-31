@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './NavbarStyle.css';
 
-import houseImg from '../images/house.svg'
 import discordImg from '../images/discord.png'
 
 const Navbar = ({ menuOpen, toggleMenu }) => {
