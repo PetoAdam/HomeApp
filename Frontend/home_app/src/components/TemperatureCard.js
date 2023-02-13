@@ -7,7 +7,7 @@ const TemperatureCard = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetch('http://petonet.ddns.net:5001/api/temperatures/current');
+            const res = await fetch('http://petonet.ddns.net/api/temperatures/current');
             const json = await res.json();
             setTemperature(json.value);
             setTimestamp(json.timestamp);

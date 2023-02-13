@@ -17,7 +17,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('http://petonet.ddns.net:5001/api/users/1', {
+        const res = await fetch('http://petonet.ddns.net/api/users/1', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

@@ -6,7 +6,7 @@ uart.init(baudrate=9600)
 
 # Send temperature data every 500ms and display it on the micro:bit's display
 while True:
-    temp = str(int(temperature()))
+    temp = int(str(temperature()))
     uart.write(temp + "\n")
     display.scroll(temp)
     sleep(2000)

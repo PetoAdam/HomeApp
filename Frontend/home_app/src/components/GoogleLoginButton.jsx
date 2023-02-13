@@ -3,7 +3,7 @@ import './GoogleLoginButtonStyle.css';
 
 const GoogleLoginButton = () => {
   return (
-    <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=343546592830-dnjbabc9apodjc7q4kugaorq4iiti4ci.apps.googleusercontent.com&redirect_uri=http://petonet.ddns.net:5001/api/users/auth&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email&response_type=code">
+    <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=343546592830-dnjbabc9apodjc7q4kugaorq4iiti4ci.apps.googleusercontent.com&redirect_uri=http://petonet.ddns.net/api/users/auth&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email&response_type=code">
         <button className="google-login-button">
         <div className="left">
             <img
