@@ -42,8 +42,9 @@ namespace HomeApp.Controllers
             return temps.ToArray();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult CreateTemperature(NewTemperature newTemperature)
+        public async Task<IActionResult> CreateTemperature([FromBody] NewTemperature newTemperature)
         {
             // Create the temperature in the database
             var temp = new Dal.Temperature
@@ -54,9 +55,9 @@ namespace HomeApp.Controllers
             };
             _context.Temperatures.Add(temp);
             _context.SaveChanges();
-
+            var modelTemp = await GetCurrent();
             // Return the created temperature -  currently DAL not Models
-            return Ok(temp);
+            return CreatedAtAction(nameof(GetCurrent), modelTemp);
         }
     }
 }
