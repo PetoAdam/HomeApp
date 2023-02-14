@@ -57,6 +57,11 @@ namespace HomeApp.Dal
         public virtual bool EmailConfirmed { get; set; }
 
         /// <summary>
+        ///     The hash of the password if there is any
+        /// </summary>
+        //public virtual string PasswordHash { get; set; }
+
+        /// <summary>
         ///     Is two factor enabled for the user
         /// </summary>
         public virtual bool TwoFactorEnabled { get; set; }

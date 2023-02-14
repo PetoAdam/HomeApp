@@ -8,7 +8,7 @@ namespace HomeApp.Authentication
 {
     public class GoogleClient
     {
-        string REDIRECT_URI = "http://petonet.ddns.net/api/users/auth";
+        string REDIRECT_URI = "http://petonet.ddns.net/api/users/auth/google";
 
         // Exchange the one-time use token for a Google access token
         // You can use the Google.Apis.Auth.OAuth2 library to do this
@@ -19,7 +19,6 @@ namespace HomeApp.Authentication
             // Create an HTTP client
             var client = new HttpClient();
 
-            // TODO: envvar
             // Set the request parameters
             var request = new HttpRequestMessage
             {
@@ -57,7 +56,7 @@ namespace HomeApp.Authentication
             var service = new Google.Apis.PeopleService.v1.PeopleServiceService(new BaseClientService.Initializer
             {
                 HttpClientInitializer = GoogleCredential.FromAccessToken(token),
-                ApplicationName = "Your application name"
+                ApplicationName = "HomeApp"
             });
 
             // Get the user's profile

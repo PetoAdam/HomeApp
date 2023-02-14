@@ -27,8 +27,8 @@ namespace HomeApp.Controllers
             this._context = dbContext;
         }
 
-        [HttpGet("auth")]
-        public async Task<RedirectResult> Auth(string code)
+        [HttpGet("auth/google")]
+        public async Task<RedirectResult> GoogleAuth(string code)
         {
             // Exchange the authorization code for a Google access token
             var googleClient = new GoogleClient();
@@ -36,19 +36,18 @@ namespace HomeApp.Controllers
 
             if (string.IsNullOrEmpty(accessToken))
             {
-                return new RedirectResult("http://homeapp.ddns.net/profile");
+                return new RedirectResult("http://petonet.ddns.net/profile");
             }
 
             // Get the user's Google profile
             var profile = await googleClient.GetProfileAsync(accessToken);
             if (profile == null)
             {
-                return new RedirectResult("http://homeapp.ddns.net/profile");
+                return new RedirectResult("http://petonet.ddns.net/profile");
             }
 
             // Check if the user exists in the database
             var user = await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == profile.Email.ToUpper());
-            ///var user = await _userManager.FindByEmailAsync(profile.Email);
             if (user == null)
             {
                 // Create a new user
@@ -68,20 +67,18 @@ namespace HomeApp.Controllers
                 await _context.SaveChangesAsync();
                 await _context.UserRoles.AddAsync(new IdentityUserRole { UserId = user.Id, RoleId = 2});
                 await _context.SaveChangesAsync();
-                ///await _userManager.CreateAsync(user);
             }
 
             // Get the user's roles
             var userRoles = _context.UserRoles.Where(ur => ur.UserId == user.Id);
             var userRoleIds = userRoles.Select(ur => ur.RoleId);
             var roles = _context.Roles.Where(r => userRoleIds.Contains(r.Id)).Select(r => r.Name);
-            ///var roles = await _userManager.GetRolesAsync(user);
 
             // Create the JWT token
             var token = CreateToken(profile, roles);
 
             // Return the JWT token
-            return new RedirectResult("http://homeapp.ddns.net/profile?token=" + token);
+            return new RedirectResult("http://petonet.ddns.net/profile?token=" + token);
             //return Ok(new { token = token });
         }
 
