@@ -14,11 +14,7 @@ with serial.Serial("/dev/ttyACM0", 9600) as ser:
             continue
 
         data = ser.readline()
-        try:
-            temp = int(data.decode())
-        except:
-            continue
-        
+        temp = int(data.decode().rstrip('\n'))
         print(temp)
 
         # Set the content type to application/json
