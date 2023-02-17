@@ -5,14 +5,27 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MySql.EntityFrameworkCore.Extensions;
 using System.Text;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 var JWT_SIGNING_KEY = Environment.GetEnvironmentVariable("JWT_SIGNING_KEY");
 var ISSUER = "homeapp.ddns.net";
 var AUDIENCE = "homeapp.ddns.net";
+var HTTPS_PEM = Environment.GetEnvironmentVariable("HTTPS_PEM");
+var HTTPS_KEY_PEM = Environment.GetEnvironmentVariable("HTTPS_KEY_PEM");
+var HTTPS_CERTIFICATE = X509Certificate2.CreateFromPemFile(HTTPS_PEM, HTTPS_KEY_PEM);
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.WebHost.UseKestrel(options =>
+{
+    options.Listen(IPAddress.Any, 5001, listenOptions =>
+    {
+        listenOptions.UseHttps(HTTPS_CERTIFICATE);
+    });
+});
 
 builder.Services.AddEntityFrameworkMySQL().AddDbContext<ApplicationDbContext>(options => {
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -60,7 +73,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
@@ -69,7 +82,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
-
 
 
 app.Run();

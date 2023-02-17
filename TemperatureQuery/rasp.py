@@ -29,7 +29,7 @@ with serial.Serial("/dev/ttyACM0", 9600) as ser:
         # Only send every 30th data to the backend server - we dont need more
         if(iteration >= 30):
             # Send the POST request to the API
-            response = requests.post("http://petonet.ddns.net/api/temperatures", json=post_data, headers=headers)
+            response = requests.post("https://homeapp.ddns.net/api/temperatures", json=post_data, headers=headers)
             print(response.status_code)
             iteration = 0
         else:

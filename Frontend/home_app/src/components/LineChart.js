@@ -11,7 +11,7 @@ const LineChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('http://petonet.ddns.net/api/temperatures/day');
+        const res = await fetch('https://homeapp.ddns.net/api/temperatures/day');
         if (!res.ok) {
           throw new Error(res.statusText);
         }

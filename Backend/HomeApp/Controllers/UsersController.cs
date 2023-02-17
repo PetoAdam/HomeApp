@@ -36,14 +36,14 @@ namespace HomeApp.Controllers
 
             if (string.IsNullOrEmpty(accessToken))
             {
-                return new RedirectResult("http://petonet.ddns.net/profile");
+                return new RedirectResult("https://homeapp.ddns.net/profile");
             }
 
             // Get the user's Google profile
             var profile = await googleClient.GetProfileAsync(accessToken);
             if (profile == null)
             {
-                return new RedirectResult("http://petonet.ddns.net/profile");
+                return new RedirectResult("https://homeapp.ddns.net/profile");
             }
 
             // Check if the user exists in the database
@@ -77,9 +77,18 @@ namespace HomeApp.Controllers
             // Create the JWT token
             var token = CreateToken(profile, roles);
 
+            // Add the JWT token to a cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = true, // for HTTPS
+                SameSite = SameSiteMode.Strict
+            };
+            Response.Cookies.Append("token", token, cookieOptions);
+
+
             // Return the JWT token
-            return new RedirectResult("http://petonet.ddns.net/profile?token=" + token);
-            //return Ok(new { token = token });
+            return new RedirectResult("http://homeapp.ddns.net/profile");
         }
 
         [Authorize]
