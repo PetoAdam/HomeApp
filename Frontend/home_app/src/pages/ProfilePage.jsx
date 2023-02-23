@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
+import EmailLogin from "../components/EmailLogin";
 import './ProfilePageStyle.css';
 
 const ProfilePage = () => {
@@ -57,8 +58,15 @@ const ProfilePage = () => {
           <p>The user is: {userInfo.userName}</p>
         </div>
       ) : (
-        <GoogleLoginButton>
-        </GoogleLoginButton>
+        <>
+          <EmailLogin>
+          </EmailLogin>
+
+          <hr />
+
+          <GoogleLoginButton>
+          </GoogleLoginButton>
+        </>
       )}
     </div>
 

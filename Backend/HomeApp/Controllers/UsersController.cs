@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ZstdNet;
+using HomeApp.Services;
 
 namespace HomeApp.Controllers
 {
@@ -73,6 +74,115 @@ namespace HomeApp.Controllers
             var userRoles = _context.UserRoles.Where(ur => ur.UserId == user.Id);
             var userRoleIds = userRoles.Select(ur => ur.RoleId);
             var roles = _context.Roles.Where(r => userRoleIds.Contains(r.Id)).Select(r => r.Name);
+
+            // Create the JWT token
+            var token = CreateToken(profile, roles);
+
+            // Add the JWT token to a cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = true, // for HTTPS
+                SameSite = SameSiteMode.Strict
+            };
+            Response.Cookies.Append("token", token, cookieOptions);
+
+
+            // Return the JWT token
+            return new RedirectResult("http://homeapp.ddns.net/profile");
+        }
+
+        [HttpPost("auth/login")]
+        public async Task<RedirectResult> Login([FromBody] Authentication.LoginInfo loginInfo)
+        {
+
+            if (string.IsNullOrEmpty(loginInfo.Email) || string.IsNullOrEmpty(loginInfo.Password))
+            {
+                return new RedirectResult("https://homeapp.ddns.net/profile");
+            }
+
+            // Check if the user exists in the database
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == loginInfo.Email.ToUpper() && u.PasswordHash == Hasher.GetHashString(loginInfo.Password));
+            if (user == null)
+            {
+                return new RedirectResult("https://homeapp.ddns.net/profile");
+            }
+
+            var profile = new Authentication.Profile
+            {
+                Id = user.Id.ToString(),
+                Name = user.UserName,
+                Email = user.Email
+            };
+
+            // Get the user's roles
+            var userRoles = _context.UserRoles.Where(ur => ur.UserId == user.Id);
+            var userRoleIds = userRoles.Select(ur => ur.RoleId);
+            var roles = _context.Roles.Where(r => userRoleIds.Contains(r.Id)).Select(r => r.Name);
+
+            // Create the JWT token
+            var token = CreateToken(profile, roles);
+
+            // Add the JWT token to a cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = true, // for HTTPS
+                SameSite = SameSiteMode.Strict
+            };
+            Response.Cookies.Append("token", token, cookieOptions);
+
+
+            // Return the JWT token
+            return new RedirectResult("http://homeapp.ddns.net/profile");
+        }
+
+        [HttpPost("auth/signup")]
+        public async Task<RedirectResult> Signup([FromBody] Authentication.LoginInfo loginInfo)
+        {
+
+            if (string.IsNullOrEmpty(loginInfo.Email) || string.IsNullOrEmpty(loginInfo.Password) || string.IsNullOrEmpty(loginInfo.Username))
+            {
+                return new RedirectResult("https://homeapp.ddns.net/profile");
+            }
+
+            // Check if the user exists in the database
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == loginInfo.Email.ToUpper());
+            if (user != null)
+            {
+                return new RedirectResult("https://homeapp.ddns.net/profile");
+            }
+            
+            // Create a new user
+            user = new IdentityUser
+            {
+                UserName = loginInfo.Username,
+                NormalizedUserName = loginInfo.Username.ToUpper(),
+                Email = loginInfo.Email,
+                NormalizedEmail = loginInfo.Email.ToUpper(),
+                EmailConfirmed = false,
+                PasswordHash = HomeApp.Services.Hasher.GetHashString(loginInfo.Password),
+                TwoFactorEnabled = false,
+                LockoutEnabled = false,
+                AccessFailedCount = 0
+            };
+            // Add user to database with default roles.
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+            await _context.UserRoles.AddAsync(new IdentityUserRole { UserId = user.Id, RoleId = 2});
+            await _context.SaveChangesAsync();
+
+            // Get the user's roles
+            var userRoles = _context.UserRoles.Where(ur => ur.UserId == user.Id);
+            var userRoleIds = userRoles.Select(ur => ur.RoleId);
+            var roles = _context.Roles.Where(r => userRoleIds.Contains(r.Id)).Select(r => r.Name);
+
+            var profile = new Authentication.Profile
+            {
+                Id = user.Id.ToString(),
+                Name = user.UserName,
+                Email = user.Email
+            };
 
             // Create the JWT token
             var token = CreateToken(profile, roles);

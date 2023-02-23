@@ -25,6 +25,7 @@ namespace HomeApp.Dal
                 entity.Property(e => e.Email).HasColumnName("email");
                 entity.Property(e => e.NormalizedEmail).HasColumnName("normalized_email");
                 entity.Property(e => e.EmailConfirmed).HasColumnName("email_confirmed");
+                entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
                 entity.Property(e => e.TwoFactorEnabled).HasColumnName("two_factor_enabled");
                 entity.Property(e => e.LockoutEnd).HasColumnName("lockout_end");
                 entity.Property(e => e.LockoutEnabled).HasColumnName("lockout_enabled");
