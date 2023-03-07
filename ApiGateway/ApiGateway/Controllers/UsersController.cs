@@ -5,17 +5,17 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using HomeApp.Authentication;
-using HomeApp.Dal;
-using HomeApp.Models;
+using ApiGateway.Authentication;
+using ApiGateway.Dal;
+using ApiGateway.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ZstdNet;
-using HomeApp.Services;
+using ApiGateway.Services;
 
-namespace HomeApp.Controllers
+namespace ApiGateway.Controllers
 {
     [ApiController]
     [Route("api/users")]
@@ -161,7 +161,7 @@ namespace HomeApp.Controllers
                 Email = loginInfo.Email,
                 NormalizedEmail = loginInfo.Email.ToUpper(),
                 EmailConfirmed = false,
-                PasswordHash = HomeApp.Services.Hasher.GetHashString(loginInfo.Password),
+                PasswordHash = ApiGateway.Services.Hasher.GetHashString(loginInfo.Password),
                 TwoFactorEnabled = false,
                 LockoutEnabled = false,
                 AccessFailedCount = 0

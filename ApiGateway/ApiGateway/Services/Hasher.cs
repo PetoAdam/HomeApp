@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace HomeApp.Services
+namespace ApiGateway.Services
 {
     public static class Hasher{
         private static byte[] GetHash(string inputString)

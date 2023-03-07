@@ -44,10 +44,11 @@ CREATE TABLE Locations (
     description TEXT
 );
 
-CREATE TABLE Temperatures (
+CREATE TABLE Measurements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     location_id INT NOT NULL,
-    value INT NOT NULL,
+    temperature DOUBLE,
+    humidity DOUBLE,
     timestamp DATETIME NOT NULL,
     FOREIGN KEY (location_id) REFERENCES Locations(id)
 );
@@ -57,6 +58,6 @@ INSERT INTO Roles (name, normalized_name) VALUES ('Admin', 'ADMIN');
 INSERT INTO Roles (name, normalized_name) VALUES ('User', 'USER');
 INSERT INTO UserRoles (user_id, role_id) SELECT 1, (SELECT id FROM Roles WHERE name = 'Admin') FROM Users WHERE user_name = 'rasp';
 INSERT INTO Locations (country, zip_code, city, street, number, description) VALUES ('Hungary', '1111', 'Budapest', 'Hengermalom út', '2/D', 'Lakás');
-INSERT INTO Temperatures (location_id, value, timestamp) VALUES (1, 23, '1998-01-23 12:45:56');
+INSERT INTO Measurements (location_id, temperature, humidity, timestamp) VALUES (1, 23, 30, '1998-01-23 12:45:56');
 
 

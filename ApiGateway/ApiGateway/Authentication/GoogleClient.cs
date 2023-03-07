@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Google.Apis.PeopleService.v1;
 
-namespace HomeApp.Authentication
+namespace ApiGateway.Authentication
 {
     public class GoogleClient
     {

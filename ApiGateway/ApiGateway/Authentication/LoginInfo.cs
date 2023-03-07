@@ -1,4 +1,4 @@
-namespace HomeApp.Authentication
+namespace ApiGateway.Authentication
 {
     public class LoginInfo
     {

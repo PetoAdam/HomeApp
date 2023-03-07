@@ -1,4 +1,4 @@
-using HomeApp.Dal;
+using ApiGateway.Dal;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +61,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_SIGNING_KEY))
             };
         });
+
 
 var app = builder.Build();
 

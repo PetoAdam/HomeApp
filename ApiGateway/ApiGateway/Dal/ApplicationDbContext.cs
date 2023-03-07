@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace HomeApp.Dal
+namespace ApiGateway.Dal
 {
     public class ApplicationDbContext : DbContext
     {
@@ -13,7 +13,7 @@ namespace HomeApp.Dal
         public virtual DbSet<IdentityRole> Roles { get; set; }
         public virtual DbSet<IdentityUserRole> UserRoles { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
-        public virtual DbSet<Temperature> Temperatures { get; set; }
+        public virtual DbSet<Measurement> Measurements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,7 +51,7 @@ namespace HomeApp.Dal
                 entity.Property(e => e.ZipCode).HasColumnName("zip_code");
             });
 
-            modelBuilder.Entity<Temperature>(entity =>
+            modelBuilder.Entity<Measurement>(entity =>
             {
                 entity.Property(e => e.LocationId).HasColumnName("location_id");
             });

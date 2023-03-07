@@ -1,7 +1,7 @@
 using Microsoft.AspNet.Identity;
 using System;
 
-namespace HomeApp.Dal
+namespace ApiGateway.Dal
 {
     /// <summary>
     /// Class that implements the ASP.NET Identity

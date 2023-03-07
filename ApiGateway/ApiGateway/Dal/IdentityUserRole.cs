@@ -1,4 +1,4 @@
-namespace HomeApp.Dal
+namespace ApiGateway.Dal
 {
     public class IdentityUserRole
     {
