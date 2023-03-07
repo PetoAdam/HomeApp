@@ -59,7 +59,7 @@ namespace ApiGateway.Dal
         /// <summary>
         ///     The hash of the password if there is any
         /// </summary>
-        public virtual string PasswordHash { get; set; }
+        public virtual string? PasswordHash { get; set; }
 
         /// <summary>
         ///     Is two factor enabled for the user
