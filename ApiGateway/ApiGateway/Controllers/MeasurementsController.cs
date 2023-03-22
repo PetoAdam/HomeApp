@@ -3,62 +3,67 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApiGateway.Models;
+using Grpc.Net.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Grpc.Core;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ApiGateway.Controllers
 {
     [ApiController]
-    [Route("api/temperatures")]
+    [Route("api/measurements")]
     public class MeasurementsController : ControllerBase
     {
         private readonly Dal.ApplicationDbContext _context;
+        private readonly GrpcChannel _channel;
+        private readonly Grpc.MeasurementService.MeasurementServiceClient _client;
 
         public MeasurementsController(Dal.ApplicationDbContext dbContext)
         {
             this._context = dbContext;
+            this._channel = GrpcChannel.ForAddress("http://localhost:5043");
+            this._client = new Grpc.MeasurementService.MeasurementServiceClient(this._channel);
         }
 
         [HttpGet("current")]
-        public async Task<ActionResult<Models.Measurement>> GetCurrent()
+        public async Task<ActionResult<Models.Measurement>> GetCurrent(int deviceId)
         {
-            var dbTemp = await _context.Measurements.FirstOrDefaultAsync(t => t.Timestamp == _context.Measurements.Max(x => x.Timestamp));
-            var location = _context.Locations.FirstOrDefault(l => l.Id == dbTemp.LocationId);
-            return new Models.Measurement(dbTemp.Id, dbTemp.Temperature, dbTemp.Humidity, dbTemp.Timestamp, new Models.Location(location));
+            var response = await _client.GetCurrentAsync(new Grpc.GetCurrentRequest { DeviceId = deviceId });
+            if (response.Measurement == null)
+            {
+                return NotFound();
+            }
+            return new Models.Measurement(response.Measurement.Id, response.Measurement.DeviceId, response.Measurement.Temperature, response.Measurement.Humidity, response.Measurement.Battery, response.Measurement.SignalStrength, response.Measurement.Timestamp.ToDateTime());
         }
 
         [HttpGet("day")]
-        public async Task<ActionResult<Models.Measurement[]>> ListDay(){
-            var dbTemps = await _context.Measurements.ToListAsync();
-            var sortedTemps = dbTemps.Where(t => t.Timestamp > DateTime.Now.AddHours(-24) && t.Timestamp < DateTime.Now);
-
+        public async Task<ActionResult<Models.Measurement[]>> ListDay(int deviceId)
+        {
+            var response = await _client.ListDayAsync(new Grpc.ListDayRequest { DeviceId = deviceId });
             var temps = new List<Models.Measurement>();
-            foreach(var temp in sortedTemps)
+            foreach (var measurement in response.Measurements)
             {
-                var location = _context.Locations.FirstOrDefault(l => l.Id == temp.LocationId);
-                temps.Add(new Models.Measurement(temp.Id, temp.Temperature, temp.Humidity, temp.Timestamp, new Models.Location(location)));
+                temps.Add(new Models.Measurement(measurement.Measurement.Id, measurement.Measurement.DeviceId, measurement.Measurement.Temperature, measurement.Measurement.Humidity, measurement.Measurement.Battery, measurement.Measurement.SignalStrength, measurement.Measurement.Timestamp.ToDateTime()));
             }
             return temps.ToArray();
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateTemperature([FromBody] NewMeasurement newMeasurement)
+        public async Task<IActionResult> CreateMeasurement([FromBody] Models.Measurement newMeasurement)
         {
-            // Create the temperature in the database
-            var temp = new Dal.Measurement
+            var response = await _client.CreateMeasurementAsync(new Grpc.CreateMeasurementRequest
             {
+                DeviceId = newMeasurement.DeviceId,
                 Temperature = newMeasurement.Temperature,
                 Humidity = newMeasurement.Humidity,
-                Timestamp = DateTime.Now,
-                LocationId = newMeasurement.LocationId
-            };
-            _context.Measurements.Add(temp);
-            _context.SaveChanges();
-            var modelTemp = await GetCurrent();
-            // Return the created temperature -  currently DAL not Models
-            return CreatedAtAction(nameof(GetCurrent), modelTemp);
+                Battery = newMeasurement.Battery,
+                SignalStrength = newMeasurement.SignalStrength,
+                Timestamp = Timestamp.FromDateTime(DateTime.Now.ToUniversalTime())
+            });
+            return CreatedAtAction(nameof(GetCurrent), new { deviceId = newMeasurement.DeviceId }, newMeasurement);
         }
     }
 }

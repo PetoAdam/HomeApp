@@ -1,4 +1,4 @@
-﻿namespace ApiGateway.Dal
+﻿namespace DatabaseService.Dal
 {
     public class Measurement
     {

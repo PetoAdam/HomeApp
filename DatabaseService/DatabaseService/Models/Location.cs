@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ApiGateway.Models
+namespace DatabaseService.Models
 {
     public class Location
     {
-        public Location(Grpc.Location location)
+
+        public Location()
+        {
+
+        }
+        public Location(Dal.Location location)
         {
             Id = location.Id;
             X = location.X;

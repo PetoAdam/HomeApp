@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace ApiGateway.Models
 {
-    public class NewMeasurement
+    public class NewDevice
     { 
-        public double Temperature { get; set; }
-        public double Humidity { get; set; }
+        public string? Name { get; set; }
         public int LocationId { get; set; }
     }
 }

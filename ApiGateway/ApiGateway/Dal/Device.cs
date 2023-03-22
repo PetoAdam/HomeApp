@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace ApiGateway.Dal
 {
-    public class Location
+    public class Device
     {
         public int Id { get; set; }
-        public int X { get; set; }  
-        public int Y { get; set; }  
-        public string Description { get; set; }
+        public string? Name { get; set; }
+        public string? Zigbee2mqttId { get; set; }
+        public int LocationId { get; set; }
     }
 }

@@ -1,5 +1,3 @@
-DROP TABLE Temperatures;
-DROP TABLE Locations;
 DROP TABLE UserRoles;
 DROP TABLE Roles;
 DROP TABLE Users;
@@ -34,30 +32,10 @@ CREATE TABLE UserRoles (
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
 
-CREATE TABLE Locations (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    country VARCHAR(255) NOT NULL,
-    zip_code VARCHAR(20) NOT NULL,
-    city VARCHAR(255) NOT NULL,
-    street VARCHAR(255) NOT NULL,
-    number VARCHAR(10) NOT NULL,
-    description TEXT
-);
-
-CREATE TABLE Measurements (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    location_id INT NOT NULL,
-    temperature DOUBLE,
-    humidity DOUBLE,
-    timestamp DATETIME NOT NULL,
-    FOREIGN KEY (location_id) REFERENCES Locations(id)
-);
 
 INSERT INTO Users (user_name, normalized_user_name, email, normalized_email, email_confirmed, password_hash, two_factor_enabled, lockout_end, lockout_enabled, access_failed_count) VALUES ('rasp', 'RASP', 'rasp@rasp.com', 'RASP@RASP.COM', 1, 'F8197C2208C0B2CE0E67817C6BCD95ED48E1F6AD9CE5BE4FEDEDA96E95734FCC', 0, NULL, 0, 0);
 INSERT INTO Roles (name, normalized_name) VALUES ('Admin', 'ADMIN');
 INSERT INTO Roles (name, normalized_name) VALUES ('User', 'USER');
 INSERT INTO UserRoles (user_id, role_id) SELECT 1, (SELECT id FROM Roles WHERE name = 'Admin') FROM Users WHERE user_name = 'rasp';
-INSERT INTO Locations (country, zip_code, city, street, number, description) VALUES ('Hungary', '1111', 'Budapest', 'Hengermalom út', '2/D', 'Lakás');
-INSERT INTO Measurements (location_id, temperature, humidity, timestamp) VALUES (1, 23, 30, '1998-01-23 12:45:56');
 
 

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option csharp_namespace = "ApiGateway.Grpc";
+
+package DatabaseService;
+
+import "Protos/location.proto";
+
+message Device{
+    int32 id = 1;
+    string name = 2;
+    string zigbee2mqttId = 3;
+    Location location = 4;
+}
+
+message NewDevice{
+    string name = 1;
+    int32 locationId = 2;
+}
+
+message ListDevicesRequest {
+}
+
+message ListDevicesResponse {
+    repeated Device devices = 1;
+}
+
+message GetByLocationRequest {
+    int32 location_id = 1;
+}
+
+message GetByLocationResponse {
+    Device device = 1;
+}
+
+message CreateDeviceRequest {
+    NewDevice new_device = 1;
+}
+
+message CreateDeviceResponse {
+    Device device = 1;
+}
+
+service DeviceService {
+    rpc List (ListDevicesRequest) returns (ListDevicesResponse) {}
+    rpc GetByLocation (GetByLocationRequest) returns (GetByLocationResponse) {}
+    rpc CreateDevice (CreateDeviceRequest) returns (CreateDeviceResponse) {}
+}

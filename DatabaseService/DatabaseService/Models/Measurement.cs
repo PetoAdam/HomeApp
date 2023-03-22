@@ -1,7 +1,11 @@
-﻿namespace ApiGateway.Models
+﻿namespace DatabaseService.Models
 {
     public class Measurement
     {
+        public Measurement()
+        {
+
+        }
         public Measurement(int id, int deviceId, double temperature, double humidity, int battery, int signalStrength, DateTime timestamp)
         {
             Id = id;

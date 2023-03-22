@@ -13,6 +13,7 @@ namespace ApiGateway.Dal
         public virtual DbSet<IdentityRole> Roles { get; set; }
         public virtual DbSet<IdentityUserRole> UserRoles { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
+        public virtual DbSet<Device> Devices { get; set; }
         public virtual DbSet<Measurement> Measurements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,15 +47,8 @@ namespace ApiGateway.Dal
                 entity.Property(e => e.RoleId).HasColumnName("role_id");
             });
 
-            modelBuilder.Entity<Location>(entity =>
-            {
-                entity.Property(e => e.ZipCode).HasColumnName("zip_code");
-            });
+            
 
-            modelBuilder.Entity<Measurement>(entity =>
-            {
-                entity.Property(e => e.LocationId).HasColumnName("location_id");
-            });
 
         }
 
