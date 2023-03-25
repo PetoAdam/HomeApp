@@ -8,6 +8,7 @@ namespace ApiGateway.Models
     public class NewDevice
     { 
         public string? Name { get; set; }
+        public string? Ip { get; set; }
         public int LocationId { get; set; }
     }
 }

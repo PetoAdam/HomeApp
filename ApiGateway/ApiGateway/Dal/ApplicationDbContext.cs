@@ -12,9 +12,6 @@ namespace ApiGateway.Dal
         public virtual DbSet<IdentityUser> Users { get; set; }
         public virtual DbSet<IdentityRole> Roles { get; set; }
         public virtual DbSet<IdentityUserRole> UserRoles { get; set; }
-        public virtual DbSet<Location> Locations { get; set; }
-        public virtual DbSet<Device> Devices { get; set; }
-        public virtual DbSet<Measurement> Measurements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

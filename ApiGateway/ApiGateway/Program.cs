@@ -15,6 +15,8 @@ var HTTPS_PEM = Environment.GetEnvironmentVariable("HTTPS_PEM");
 var HTTPS_KEY_PEM = Environment.GetEnvironmentVariable("HTTPS_KEY_PEM");
 var HTTPS_CERTIFICATE = X509Certificate2.CreateFromPemFile(HTTPS_PEM, HTTPS_KEY_PEM);
 
+Console.WriteLine("Starting ApiGateway...");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -83,6 +85,8 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
+
+Console.WriteLine("ApiGateway successfully started.");
 
 
 app.Run();

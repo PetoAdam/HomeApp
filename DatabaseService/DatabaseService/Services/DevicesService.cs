@@ -15,10 +15,12 @@ namespace DatabaseService.Services
     public class DevicesService : DeviceService.DeviceServiceBase
     {
         private readonly Dal.ApplicationDbContext _context;
+        private readonly ILogger<DevicesService> _logger;
 
-        public DevicesService(Dal.ApplicationDbContext dbContext)
+        public DevicesService(Dal.ApplicationDbContext dbContext, ILogger<DevicesService> logger)
         {
             this._context = dbContext;
+            this._logger = logger;
         }
 
         public override async Task<ListDevicesResponse> List(ListDevicesRequest request, ServerCallContext context)
@@ -33,6 +35,7 @@ namespace DatabaseService.Services
                     Id = device.Id,
                     Name = device.Name,
                     Zigbee2MqttId = device.Zigbee2mqttId,
+                    Ip = device.Ip,
                     Location = new Location
                     {
                         Id = location.Id,
@@ -56,6 +59,7 @@ namespace DatabaseService.Services
                     Id = device.Id,
                     Name = device.Name,
                     Zigbee2MqttId = device.Zigbee2mqttId,
+                    Ip = device.Ip,
                     Location = new Location
                     {
                         Id = location.Id,
@@ -69,11 +73,14 @@ namespace DatabaseService.Services
 
         public override async Task<CreateDeviceResponse> CreateDevice(CreateDeviceRequest request, ServerCallContext context)
         {
-            // TODO: before adding it to db, should be assigned to zigbee2mqtt
+            // TODO: Call zigbee2mqtt to pair new device, wait until device is added, then continue
+            // TODO: Change NewDevice to allow setting more parameters then the current ones, after mqtt/zigbee2mqtt is set up.
+
             // Create the device in the database
             var device = new Dal.Device
             {
                 Name = request.NewDevice.Name,
+                Ip = request.NewDevice.Ip,
                 LocationId = request.NewDevice.LocationId
             };
             _context.Devices.Add(device);
@@ -92,6 +99,7 @@ namespace DatabaseService.Services
                     Id = modelDevice.Id,
                     Name = modelDevice.Name,
                     Zigbee2MqttId = modelDevice.Zigbee2mqttId,
+                    Ip = modelDevice.Ip,
                     Location = new Location
                     {
                         Id = location.Id,

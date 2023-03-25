@@ -35,7 +35,7 @@ namespace ApiGateway.Controllers
             foreach (var device in response.Devices)
             {
                 var location = device.Location;
-                devices.Add(new Models.Device(device.Id, device.Name, device.Zigbee2MqttId, new Models.Location(location.Id, location.X, location.Y, location.Description)));
+                devices.Add(new Models.Device(device.Id, device.Name, device.Zigbee2MqttId, device.Ip, new Models.Location(location.Id, location.X, location.Y, location.Description)));
             }
 
             return devices.ToArray();
@@ -47,27 +47,26 @@ namespace ApiGateway.Controllers
             var response = await _client.GetByLocationAsync(new Grpc.GetByLocationRequest { LocationId = locationId });
             var device = response.Device;
             var location = device.Location;
-            return new Models.Device(device.Id, device.Name, device.Zigbee2MqttId, new Models.Location(location.Id, location.X, location.Y, location.Description));
+            return new Models.Device(device.Id, device.Name, device.Zigbee2MqttId, device.Ip, new Models.Location(location.Id, location.X, location.Y, location.Description));
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateDevice([FromBody] NewDevice newDevice)
         {
-            // TODO: Call zigbee2mqtt to pair new device, wait until device is added, then continue
-            // TODO: Change NewDevice to allow setting more parameters then the current ones, after zigbee2mqtt is set up.
             var request = new Grpc.CreateDeviceRequest
             {
                 NewDevice = new Grpc.NewDevice
                 {
                     Name = newDevice.Name,
+                    Ip = newDevice.Ip,
                     LocationId = newDevice.LocationId
                 }
             };
             var response = await _client.CreateDeviceAsync(request);
             var device = response.Device;
             var location = device.Location;
-            var modelDevice = new Models.Device(device.Id, device.Name, device.Zigbee2MqttId, new Models.Location(location.Id, location.X, location.Y, location.Description));
+            var modelDevice = new Models.Device(device.Id, device.Name, device.Zigbee2MqttId, device.Ip, new Models.Location(location.Id, location.X, location.Y, location.Description));
 
             return CreatedAtAction(nameof(GetByLocation), modelDevice);
         }
