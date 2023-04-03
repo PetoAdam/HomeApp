@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option csharp_namespace = "MQTTService";
+
+package MQTTService;
+
+import "Protos/location.proto";  // Add this line
+
+message CreateDeviceRequest {
+    optional string ip = 1;
+}
+
+message CreateDeviceResponse {
+}
+
+message RemoveDeviceRequest{
+    optional string zigbee2mqttId = 1;
+    optional string ip = 2;
+}
+
+message RemoveDeviceResponse{
+}
+
+service DeviceService {
+    rpc CreateDevice (CreateDeviceRequest) returns (CreateDeviceResponse) {}
+    rpc RemoveDevice (RemoveDeviceRequest) returns (RemoveDeviceResponse) {}
+}
