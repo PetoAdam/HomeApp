@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option csharp_namespace = "MQTTService";
 
-package MQTTService;
+package HomeApp;
 
 import "google/protobuf/empty.proto";
 

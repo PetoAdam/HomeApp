@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option csharp_namespace = "ApiGateway.Grpc";
 
-package DatabaseService;
+package HomeApp;
 
 import "Protos/location.proto";
 

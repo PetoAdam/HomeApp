@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option csharp_namespace = "DatabaseService";
 
-package DatabaseService;
+package HomeApp;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -34,16 +34,26 @@ message MeasurementListResponse {
 }
 
 message CreateMeasurementRequest {
-    int32 device_id = 2;
-    double temperature = 3;
-    double humidity = 4;
-    int32 battery = 5;
-    int32 signal_strength = 6;
-    google.protobuf.Timestamp timestamp = 7;
+    int32 device_id = 1;
+    double temperature = 2;
+    double humidity = 3;
+    int32 battery = 4;
+    int32 signal_strength = 5;
+    google.protobuf.Timestamp timestamp = 6;
+}
+
+message CreateMeasurementByFriendlyNameRequest {
+    string friendly_name = 1;
+    double temperature = 2;
+    double humidity = 3;
+    int32 battery = 4;
+    int32 signal_strength = 5;
+    google.protobuf.Timestamp timestamp = 6;
 }
 
 service MeasurementService {
     rpc GetCurrent (GetCurrentRequest) returns (MeasurementResponse) {}
     rpc ListDay (ListDayRequest) returns (MeasurementListResponse) {}
     rpc CreateMeasurement (CreateMeasurementRequest) returns (google.protobuf.Empty) {}
+    rpc CreateMeasurementByFriendlyName (CreateMeasurementByFriendlyNameRequest) returns (google.protobuf.Empty) {}
 }

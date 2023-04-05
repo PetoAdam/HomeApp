@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option csharp_namespace = "DatabaseService";
 
-package DatabaseService;
+package HomeApp;
 
 import "google/protobuf/empty.proto";
 

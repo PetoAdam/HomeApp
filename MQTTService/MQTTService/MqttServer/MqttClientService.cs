@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
 using MQTTnet;
 using MQTTnet.Client;
 using System;
@@ -6,6 +7,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Grpc.Core;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Net.Client;
+using Newtonsoft.Json;
 
 namespace MQTTService.MqttService
 {
@@ -14,20 +19,24 @@ namespace MQTTService.MqttService
         private readonly string BROKER_HOST = "192.168.0.122";
         private readonly int BROKER_PORT = 1883;
         private readonly string ZIGBEE_TOPIC = "zigbee2mqtt/#";
-
         private readonly ILogger<MqttClientService> logger;
         private readonly IMqttClient mqttClient;
+        private readonly GrpcChannel grpcChannel;
+        private readonly MeasurementService.MeasurementServiceClient grpcClient;
 
         public MqttClientService(ILogger<MqttClientService> logger)
         {
             this.logger = logger;
 
+            this.grpcChannel = GrpcChannel.ForAddress("http://localhost:5043");
+            this.grpcClient = new MeasurementService.MeasurementServiceClient(this.grpcChannel);
+
             mqttClient = new MqttFactory().CreateMqttClient();
             mqttClient.ConnectedAsync += OnConnected;
             mqttClient.DisconnectedAsync += OnDisconnected;
             mqttClient.ApplicationMessageReceivedAsync += OnMessageReceived;
-            logger.LogInformation("MQTT client created");
-            
+
+            this.logger.LogInformation("MQTT client created");
         }
 
         public async Task StartAsync()
@@ -72,7 +81,7 @@ namespace MQTTService.MqttService
             }
 
             // Handle new device
-            if (arg.ApplicationMessage.Topic == "zigbee2mqtt/bridge/log")
+            else if (arg.ApplicationMessage.Topic == "zigbee2mqtt/bridge/log")
             {
                 // Handle incoming message
                 string type = (string)config.type;
@@ -80,6 +89,28 @@ namespace MQTTService.MqttService
                     var name = (string)config.meta.friendly_name;
                     logger.LogInformation("New device successfully connected. Friendly name: " + name);
                 }
+            }
+
+            // Should be the Topic for single devices
+            // TODO: Check first if device with the given friendly_name exists. (low prio)
+            else
+            {
+                dynamic messageData = JsonConvert.DeserializeObject(payload);
+                var friendly_name = arg.ApplicationMessage.Topic.Split('/')[1];
+
+                logger.LogInformation("Incoming data message from " + friendly_name);
+
+                var response = await grpcClient.CreateMeasurementByFriendlyNameAsync(new CreateMeasurementByFriendlyNameRequest
+                {
+                    FriendlyName = friendly_name,
+                    Temperature = messageData.temperature,
+                    Humidity = messageData.humidity,
+                    Battery = messageData.battery,
+                    SignalStrength = messageData.linkquality,
+                    Timestamp = Timestamp.FromDateTime(DateTime.Now.ToUniversalTime())
+                });
+
+                logger.LogInformation("Message from device: " + friendly_name + " sent.");
             }
 
         }

@@ -97,5 +97,33 @@ namespace DatabaseService.Services
             return new Empty();
 
         }
+
+        public override async Task<Empty> CreateMeasurementByFriendlyName(CreateMeasurementByFriendlyNameRequest request, ServerCallContext context)
+        {
+            _logger.LogInformation("Incoming measurement from: " + request.FriendlyName);
+            var device = await _context.Devices.FirstOrDefaultAsync(d => d.Zigbee2mqttId == request.FriendlyName);
+            if(device == null)
+            {
+                return new Empty();
+            }
+
+            _logger.LogInformation("Measurement: \n\tDeviceId: " + device.Id + "\n\tTemperature: " + request.Temperature + "\n\tHumidity: " + request.Humidity + "\n\tBattery: " + request.Battery + "\n\tSignalStrength: " + request.SignalStrength + "\n\tTimestamp: " + request.Timestamp.ToDateTime());
+                
+            var temp = new Dal.Measurement
+            {
+                DeviceId = device.Id,
+                Temperature = request.Temperature,
+                Humidity = request.Humidity,
+                Battery = request.Battery,
+                SignalStrength = request.SignalStrength,
+                Timestamp = request.Timestamp.ToDateTime()
+            };
+
+            _context.Measurements.Add(temp);
+            await _context.SaveChangesAsync();
+
+            return new Empty();
+
+        }
     }
 }
