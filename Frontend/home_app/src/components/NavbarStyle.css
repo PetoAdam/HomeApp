@@ -36,10 +36,11 @@
     display: flex;
     flex: 1;
     align-items: center;
-    justify-content: left; /* align elements in the center */
+    justify-content: right; /* align elements on the right */
     font-size: 18px;
     font-weight: 500;
     text-align: center;
+    padding-right: 20px; /* padding due to the scrollbar */
 }
 
 

@@ -1,0 +1,107 @@
+.map-container {
+    width: fit-content;
+    height: 600px;
+  }
+  
+  .map {
+    margin-top: 100px;
+    margin-left: 20%;
+    margin-right: 20%;
+    align-content: center;
+    height: 50%; /* set the map's height to 100% of the container's height */
+    width: 50%; /* set the map's width to 100% of the container's width */
+    position: absolute; /* make the map position absolute */
+    top: 0; /* position the map at the top of the container */
+    left: 0; /* position the map at the left of the container */
+  }
+  
+    
+    .map-image {
+    
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    }
+    
+    .map-marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    border: 2px solid #43a047;
+    z-index: 2;
+    }
+    
+    .map-marker:hover {
+    cursor: pointer;
+    }
+    
+    .map-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    border: 2px solid #43a047;
+    z-index: 3;
+    }
+    
+    .map-popup h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #43a047;
+    }
+    
+    .map-popup p {
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: 300;
+    color: #616161;
+    }
+    
+    .map-popup button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    
+    .map-popup button:hover {
+    background-color: #43a047;
+    }
+    
+    .map-popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #616161;
+    cursor: pointer;
+    }
+    
+    .map-popup-close:hover {
+    color: #43a047;
+    }
+
+    .device-icon {
+      z-index: 100;
+    }
