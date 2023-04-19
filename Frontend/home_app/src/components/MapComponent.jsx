@@ -9,7 +9,6 @@ const MapComponent = () => {
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
   const [mapX, setMapX] = useState(0);
   const [mapY, setMapY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -22,7 +21,6 @@ const MapComponent = () => {
       .then(response => response.blob())
       .then(image => {
         const url = URL.createObjectURL(image);
-        //setBackgroundImage(url);
         setBackgroundImage(backgroundImg);
       });
   }, []);
@@ -38,15 +36,10 @@ const MapComponent = () => {
         console.log(error);
       });
   }, []);
-  
+
 
   // Add a new device to the map
   const handleDeviceAdd = () => {
-    const x = parseInt(document.querySelector('.add-menu input[type="number"][placeholder="X"]').value, 10);
-    const y = parseInt(document.querySelector('.add-menu input[type="number"][placeholder="Y"]').value, 10);
-    const name = document.querySelector('.add-menu input[type="string"][placeholder="Name"]').value;
-    const description = document.querySelector('.add-menu input[type="string"][placeholder="Description"]').value;
-
     // Send location first
     const addNewLocation = () => {
       const requestOptions = {
@@ -61,153 +54,125 @@ const MapComponent = () => {
         .then(response => response.json())
         .then(data => {
           setnewLocationId(data.Id);
-          const newDevice = { location: { x, y, Id: data.Id }, name, description };
-          setDevices([...devices, newDevice]);
         })
         .catch(error => console.log(error));
     };
 
-  addNewLocation();
+    const x = parseInt(document.querySelector('.add-menu input[type="number"][placeholder="X"]').value, 10);
+    const y = parseInt(document.querySelector('.add-menu input[type="number"][placeholder="Y"]').value, 10);
+    const name = document.querySelector('.add-menu input[type="text"][placeholder="Name"]').value;
+    const description = document.querySelector('.add-menu input[type="text"][placeholder="Description"]').value;
+    addNewLocation();
+    const newDevice = { location: { x, y, Id: newLocationId }, name, description };
+    setDevices([...devices, newDevice]);
     setMenuOpen(false);
   };
 
-  // Move the map when the user drags it
+  // Drag map
   const handleMapDrag = event => {
-    const startMouseX = event.clientX;
-    const startMouseY = event.clientY;
+    event.preventDefault();
+    document.body.style.overflow = 'hidden';
+    let startMouseX, startMouseY;
+    if (event.type === 'mousedown') {
+      startMouseX = event.clientX;
+      startMouseY = event.clientY;
+    } else if (event.type === 'touchstart') {
+      startMouseX = event.changedTouches[0].clientX;
+      startMouseY = event.changedTouches[0].clientY;
+    }
     const startMapX = mapX;
     const startMapY = mapY;
   
-    const handleMouseMove = event => {
-      setMapX(startMapX + (event.clientX - startMouseX) / zoomLevel);
-      setMapY(startMapY + (event.clientY - startMouseY) / zoomLevel);
+    const handleMove = event => {
+      let moveMouseX, moveMouseY;
+      if (event.type === 'mousemove') {
+        moveMouseX = event.clientX;
+        moveMouseY = event.clientY;
+      } else if (event.type === 'touchmove') {
+        moveMouseX = event.changedTouches[0].clientX;
+        moveMouseY = event.changedTouches[0].clientY;
+      }
+      setMapX(startMapX + (moveMouseX - startMouseX));
+      setMapY(startMapY + (moveMouseY - startMouseY));
     };
   
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+    const handleEnd = () => {
+      document.body.style.overflow = 'auto';
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('touchend', handleEnd);
     };
   
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  const enableScroll = () => {
-    document.body.style.overflow = '';
-  };
-  
-  const disableScroll = () => {
-    document.body.style.overflow = 'hidden';
-  };  
-
-  // Zoom the map when the user scrolls
-  const handleMapScroll = event => {
-    event.preventDefault();
-    const newZoomLevel = zoomLevel - event.deltaY / 1000;
-    setZoomLevel(Math.max(1, Math.min(newZoomLevel, 3)));
-  };
-
-  // Move the selected device when the user drags it
-  const handleDeviceDrag = event => {
-    const newDevice = { ...selectedDevice };
-    newDevice.x += event.movementX / zoomLevel;
-    newDevice.y += event.movementY / zoomLevel;
-    setSelectedDevice(newDevice);
-    // TODO: update location of the device in db
-  };
-
-  // Show the add menu when the user long presses
-  const handleLongPress = event => {
-    if(token){
-      event.preventDefault();
-      setMenuOpen(true);
-      setMenuX(event.clientX);
-      setMenuY(event.clientY);
-    }else{
-      // TODO: Implement something to handle when the user is not logged in. Also should handle errors when adding a new device if the user is unauthorized (not admin). 
+    if (event.type === 'mousedown' || event.type === 'touchstart') {
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleEnd);
+      document.addEventListener('touchmove', handleMove);
+      document.addEventListener('touchend', handleEnd);
     }
-    
+  };
+  
+
+  // Open the context menu for a device
+  const handleDeviceContextMenu = (event, device) => {
+    event.preventDefault();
+    setSelectedDevice(device);
+    setMenuOpen(true);
+    setMenuX(event.clientX);
+    setMenuY(event.clientY);
   };
 
-  // Hide the add menu when the user clicks outside it
+  // Close the context menu
   const handleMenuClose = () => {
+    setSelectedDevice(null);
     setMenuOpen(false);
   };
 
-  // Show details when the user clicks on a device
-  const handleDeviceClick = object => {
-    setSelectedDevice(object);
-  };
-
-  const handleIconClick = (index) => {
-    setSelectedDevice(devices[index]);
-    selectedDevice[index].isOpen = !selectedDevice[index].isOpen;
-  };
-
   return (
-    <div className="map-container" 
-          onMouseDown={event => !selectedDevice && handleMapDrag(event)}
-          onTouchStart={event => !selectedDevice && handleMapDrag(event.touches[0])}
-          onTouchMove={event => !selectedDevice && handleMapDrag(event.touches[0])}
-          onContextMenu={handleLongPress}
-          onWheel={handleMapScroll}
-          onMouseEnter={disableScroll}
-          onMouseLeave={enableScroll}
-          onMouseMove={event => selectedDevice && handleDeviceDrag(event)}
-      >
+    <div className="container">
+    <div className="map-container"
+      onMouseDown={event => !selectedDevice && handleMapDrag(event)}
+      onTouchStart={event => !selectedDevice && handleMapDrag(event)}
+      onTouchMove={event => !selectedDevice && handleMapDrag(event.touches[0])}
+    >
       {backgroundImage && (
         <div
           className="map"
-          
+          id="map"
+          style={{
+            transform: `translate(${mapX}px, ${mapY}px)`,
+            scale: `100%`
+          }}
         >
-        <img className='map-image' src={backgroundImage} style={{
-          transform: `translate(${mapX / zoomLevel}px, ${mapY / zoomLevel}px)`,
-          scale: `${100 * zoomLevel}%`
-        }}>
-        </img>
+          <img className='map-image' src={backgroundImage} />
 
-        {devices.map((device, index) => (
-          <div
-            key={device.name}
-            className="device-icon"
-            style={{
-              position: 'absolute',
-              transform: `translate(${(mapX / zoomLevel + devices[index].location.x)}px, ${(mapY / zoomLevel+ devices[index].location.y)}px)`,
-            }}
-            onClick={() => handleIconClick(index)}
+          {devices.map((device, index) => (
+            <div
+              key={device.name}
+              className="device-marker"
+              style={{
+                transform: `translate(${(( document.getElementById("map").offsetWidth / 100 * devices[index].location.x))}px, ${(( document.getElementById("map").offsetHeight / 100 * devices[index].location.y - document.getElementById("map").offsetHeight/2))}px)`
+              }}
+              onContextMenu={event => handleDeviceContextMenu(event, device)}
             >
-            <span className="device-name">{device.name}</span>
-          </div>
-        ))}
-
-        {selectedDevice && (
-          <div
-            className="selected-object"
-            style={{
-              left: `${selectedDevice.location.x}px`,
-              top: `${selectedDevice.location.y}px`,
-            }}
-          >
-            <div className="object-details" onClick={() => setSelectedDevice(null)}>
-              <p>Device Details:</p>
-              <p>X: {selectedDevice.location.x}</p>
-              <p>Y: {selectedDevice.location.y}</p>
+              {device.name}
             </div>
-          </div>
-        )}
-        {menuOpen && (
-          <div className="add-menu" style={{ left: menuX, top: menuY }} onClick={handleMenuClose}>
-            <p>Add new device:</p>
-            <input type="number" placeholder="X" />
-            <input type="number" placeholder="Y" />
-            <input type="string" placeholder="Name" />
-            <input type="string" placeholder="Description" />
-            <button onClick={handleDeviceAdd}>Add</button>
-          </div>
-        )}
-        </div>
-      )}
-    </div>
+          ))
+          }
+          {
+            menuOpen && (
+              <div className="context-menu" style={{ 
+                transform: `translate(${(( document.getElementById("map").offsetWidth / 100 * selectedDevice.location.x + 20))}px, ${(( document.getElementById("map").offsetHeight / 100 * selectedDevice.location.y - document.getElementById("map").offsetHeight/2 -20))}px)`
+                }}>
+                <div>{selectedDevice.name}</div>
+                <div>{selectedDevice.description}</div>
+                <button onClick={handleMenuClose}>Close</button>
+              </div >
+            )}
+        </div >
+      )
+      } </div>
+      </div>
   );
 }
 
