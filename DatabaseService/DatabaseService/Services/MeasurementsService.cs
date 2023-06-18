@@ -41,7 +41,7 @@ namespace DatabaseService.Services
                         Humidity = dbMeasurement.Humidity,
                         Battery = dbMeasurement.Battery,
                         SignalStrength = dbMeasurement.SignalStrength,
-                        Timestamp = Timestamp.FromDateTime(dbMeasurement.Timestamp.ToUniversalTime())
+                        Timestamp = Timestamp.FromDateTime(DateTime.SpecifyKind(dbMeasurement.Timestamp, DateTimeKind.Utc))
                     }
                 };
             }
@@ -66,7 +66,7 @@ namespace DatabaseService.Services
                     Humidity = m.Humidity,
                     Battery = m.Battery,
                     SignalStrength = m.SignalStrength,
-                    Timestamp = Timestamp.FromDateTime(m.Timestamp.ToUniversalTime())
+                    Timestamp = Timestamp.FromDateTime(DateTime.SpecifyKind(m.Timestamp, DateTimeKind.Utc))
                 }
                 
             })

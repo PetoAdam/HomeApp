@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './MapComponentStyle.css';
+import MapLabel from './MapLabel';
 
 import backgroundImg from '../images/background.png'
 
@@ -17,7 +18,7 @@ const MapComponent = () => {
 
   // Load background image from API endpoint on mount
   useEffect(() => {
-    fetch('https://homeapp.ddns.net/api/devices/1')
+    fetch('https://homeapp.ddns.net/api/devices/2')
       .then(response => response.blob())
       .then(image => {
         const url = URL.createObjectURL(image);
@@ -111,22 +112,6 @@ const MapComponent = () => {
       document.addEventListener('touchend', handleEnd);
     }
   };
-  
-
-  // Open the context menu for a device
-  const handleDeviceContextMenu = (event, device) => {
-    event.preventDefault();
-    setSelectedDevice(device);
-    setMenuOpen(true);
-    setMenuX(event.clientX);
-    setMenuY(event.clientY);
-  };
-
-  // Close the context menu
-  const handleMenuClose = () => {
-    setSelectedDevice(null);
-    setMenuOpen(false);
-  };
 
   return (
     <div className="container">
@@ -144,31 +129,18 @@ const MapComponent = () => {
             scale: `100%`
           }}
         >
-          <img className='map-image' src={backgroundImage} />
+          <img className='map-image' src={backgroundImage} alt='background' />
 
           {devices.map((device, index) => (
-            <div
-              key={device.name}
-              className="device-marker"
-              style={{
-                transform: `translate(${(( document.getElementById("map").offsetWidth / 100 * devices[index].location.x))}px, ${(( document.getElementById("map").offsetHeight / 100 * devices[index].location.y - document.getElementById("map").offsetHeight/2))}px)`
+            <div style={{
+              transform: `translate(${(( document.getElementById("map")?.offsetWidth / 100 * devices[index].location.x)) ?? 0}px, ${(( document.getElementById("map")?.offsetHeight / 100 * devices[index].location.y - document.getElementById("map")?.offsetHeight/2))?? 0}px)`
               }}
-              onContextMenu={event => handleDeviceContextMenu(event, device)}
-            >
-              {device.name}
+              key={device.name}>
+               <MapLabel device={device} className="device-marker" />
             </div>
+            
           ))
           }
-          {
-            menuOpen && (
-              <div className="context-menu" style={{ 
-                transform: `translate(${(( document.getElementById("map").offsetWidth / 100 * selectedDevice.location.x + 20))}px, ${(( document.getElementById("map").offsetHeight / 100 * selectedDevice.location.y - document.getElementById("map").offsetHeight/2 -20))}px)`
-                }}>
-                <div>{selectedDevice.name}</div>
-                <div>{selectedDevice.description}</div>
-                <button onClick={handleMenuClose}>Close</button>
-              </div >
-            )}
         </div >
       )
       } </div>
