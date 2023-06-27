@@ -29,7 +29,7 @@ const Navbar = ({ menuOpen, toggleMenu }) => {
         <ul className={`nav-menu ${menuOpen ? 'show' : ''}`}>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/profile">Profile</Link></li>
-          <li><Link to="/contact">Contact</Link></li>
+          <li><Link to="/details">Details</Link></li>
           <li><Link to="/settings">Settings</Link></li>
           <li><Link to="/logout">Logout</Link></li>
           </ul>

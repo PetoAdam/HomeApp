@@ -11,7 +11,7 @@ const LineChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('http://petonet.ddns.net:5001/api/temperatures/day');
+        const res = await fetch('https://homeapp.ddns.net/api/measurements/day?deviceId=2');
         if (!res.ok) {
           throw new Error(res.statusText);
         }
@@ -30,7 +30,7 @@ const LineChart = () => {
     if (data.length && canvasRef.current && !chartRef.current) {
         // Extract the labels (timestamps) and data (values) from the data object
         const labels = data.map(item => String(new Date(item.timestamp).getHours()).padStart(2, '0') + ':' + String(new Date(item.timestamp).getMinutes()).padStart(2, '0'));
-        const values = data.map(item => ({x: String(new Date(item.timestamp).getHours()).padStart(2, '0') + ':' + String(new Date(item.timestamp).getMinutes()).padStart(2, '0'), y: item.value}));
+        const values = data.map(item => ({x: String(new Date(item.timestamp).getHours()).padStart(2, '0') + ':' + String(new Date(item.timestamp).getMinutes()).padStart(2, '0'), y: item.temperature}));
 
         const ctx = canvasRef.current.getContext('2d');
         chartRef.current = new Chart(ctx, {

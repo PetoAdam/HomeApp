@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option csharp_namespace = "DatabaseService";
+
+package HomeApp;
+
+import "google/protobuf/empty.proto";
+
+message Location{
+    int32 id = 1;
+    int32 x = 2;
+    int32 y = 3;
+    string description = 4;
+}
+
+message GetLocationRequest {
+  int32 id = 1;
+}
+
+message ListLocationsRequest {
+}
+
+message ListLocationsResponse {
+  repeated Location locations = 1;
+}
+
+message CreateLocationRequest {
+  int32 x = 1;
+  int32 y = 2;
+  string description = 3;
+}
+
+message LocationResponse {
+  Location location = 1;
+}
+
+service LocationService {
+  rpc List (ListLocationsRequest) returns (ListLocationsResponse);
+  rpc GetById (GetLocationRequest) returns (LocationResponse);
+  rpc Create (CreateLocationRequest) returns (LocationResponse);
+}

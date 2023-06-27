@@ -1,37 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import GoogleLoginButton from "../components/GoogleLoginButton";
+import EmailLogin from "../components/EmailLogin";
 import './ProfilePageStyle.css';
 
 const ProfilePage = () => {
-  const location = useLocation();
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [userInfo, setUserInfo] = useState([]);
 
   useEffect(() => {
-    const query = new URLSearchParams(location.search);
-    const token = query.get("token");
-    setToken(token);
-  }, [location.search]);
+    if(!token){
+      const checkForCookie = () => {
+        const token = document.cookie
+          .split("; ")
+          .find(row => row.startsWith("token="))
+          ?.split("=")[1];
+        if (token) {
+          setToken(token);
+          localStorage.setItem('token', token);
+        } else {
+          setTimeout(checkForCookie, 100); // wait 100ms before checking again
+        }
+      };
+      checkForCookie();
+    }
+  }, [token]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('http://petonet.ddns.net:5001/api/users/1', {
-          headers: {
-            'Authorization': `Bearer ${token}`
+    if (token) {
+      const fetchData = async () => {
+        try {
+          const res = await fetch('https://homeapp.ddns.net/api/users/1', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (!res.ok) {
+            throw new Error(res.statusText);
           }
-        });
-        if (!res.ok) {
-          throw new Error(res.statusText);
+          const json = await res.json();
+          setUserInfo(json);
+        } catch (err) {
+          console.error(err);
         }
-        const json = await res.json();
-        setUserInfo(json);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchData();
+      };
+      fetchData();
+    }
   }, [token]);
   
 
@@ -45,8 +58,15 @@ const ProfilePage = () => {
           <p>The user is: {userInfo.userName}</p>
         </div>
       ) : (
-        <GoogleLoginButton>
-        </GoogleLoginButton>
+        <>
+          <EmailLogin>
+          </EmailLogin>
+
+          <hr />
+
+          <GoogleLoginButton>
+          </GoogleLoginButton>
+        </>
       )}
     </div>
 
