@@ -51,7 +51,7 @@ namespace DatabaseService.Services
         public override async Task<GetByLocationResponse> GetByLocation(GetByLocationRequest request, ServerCallContext context)
         {
             var device = await _context.Devices.FirstOrDefaultAsync(d => d.LocationId == request.LocationId);
-            var location = await _context.Locations.FirstOrDefaultAsync(l => l.Id == device.LocationId);
+            var location = await _context.Locations.FirstOrDefaultAsync(l => l.Id == request.LocationId);
             return new GetByLocationResponse
             {
                 Device = new Device

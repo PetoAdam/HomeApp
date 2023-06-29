@@ -1,13 +1,12 @@
 import React from 'react';
-import TemperatureCard from '../components/TemperatureCard';
-import LineChart from '../components/LineChart';
-import MapComponent from '../components/MapComponent';
+import DataCard from '../components/DataCard';
+import LineChartContainer from '../components/LineChartContainer';
 
 const DetailsPage = () => {
   return (
     <div style={{marginTop: "100px"}}>
-      <TemperatureCard className="temperature-card" />
-      <LineChart />
+      <DataCard className="data-card" />
+      <LineChartContainer />
     </div>
   );
 };
