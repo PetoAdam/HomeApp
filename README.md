@@ -14,7 +14,7 @@ The Zigbee devices send data to a zigbee2mqtt bridge that transforms the data in
 
 The rest of the microservices use gRPC with Protobuf for communication between each other -  currently set up for local environments only.
 
-It is possible to use IoT devices that are outside the local area network, as the REST API provides endpoints for this scenario too. Due to security concerns, these devices must authenticate and authorzize themselves.
+It is possible to use IoT devices that are outside the local area network, as the REST API provides endpoints for this scenario too. Due to security concerns, these devices must authenticate and authorize themselves.
 
 ## Architecture
 

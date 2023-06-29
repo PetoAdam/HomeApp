@@ -36,11 +36,7 @@ namespace DatabaseService.Services
                     Measurement = new Measurement
                     {
                         Id = dbMeasurement.Id,
-                        DeviceId = dbMeasurement.DeviceId,
-                        Temperature = dbMeasurement.Temperature,
-                        Humidity = dbMeasurement.Humidity,
-                        Battery = dbMeasurement.Battery,
-                        SignalStrength = dbMeasurement.SignalStrength,
+                        Data = dbMeasurement.Data,
                         Timestamp = Timestamp.FromDateTime(DateTime.SpecifyKind(dbMeasurement.Timestamp, DateTimeKind.Utc))
                     }
                 };
@@ -62,10 +58,7 @@ namespace DatabaseService.Services
                 {
                     Id = m.Id,
                     DeviceId = m.DeviceId,
-                    Temperature = m.Temperature,
-                    Humidity = m.Humidity,
-                    Battery = m.Battery,
-                    SignalStrength = m.SignalStrength,
+                    Data = m.Data,
                     Timestamp = Timestamp.FromDateTime(DateTime.SpecifyKind(m.Timestamp, DateTimeKind.Utc))
                 }
                 
@@ -84,10 +77,7 @@ namespace DatabaseService.Services
             var temp = new Dal.Measurement
             {
                 DeviceId = request.DeviceId,
-                Temperature = request.Temperature,
-                Humidity = request.Humidity,
-                Battery = request.Battery,
-                SignalStrength = request.SignalStrength,
+                Data = request.Data,
                 Timestamp = request.Timestamp.ToDateTime()
             };
 
@@ -107,15 +97,12 @@ namespace DatabaseService.Services
                 return new Empty();
             }
 
-            _logger.LogInformation("Measurement: \n\tDeviceId: " + device.Id + "\n\tTemperature: " + request.Temperature + "\n\tHumidity: " + request.Humidity + "\n\tBattery: " + request.Battery + "\n\tSignalStrength: " + request.SignalStrength + "\n\tTimestamp: " + request.Timestamp.ToDateTime());
+            _logger.LogInformation("Measurement: \n\tDeviceId: " + device.Id + "\n\tData: " + request.Data + "\n\tTimestamp: " + request.Timestamp.ToDateTime());
                 
             var temp = new Dal.Measurement
             {
                 DeviceId = device.Id,
-                Temperature = request.Temperature,
-                Humidity = request.Humidity,
-                Battery = request.Battery,
-                SignalStrength = request.SignalStrength,
+                Data = request.Data,
                 Timestamp = request.Timestamp.ToDateTime()
             };
 

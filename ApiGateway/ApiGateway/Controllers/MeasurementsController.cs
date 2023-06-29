@@ -35,7 +35,7 @@ namespace ApiGateway.Controllers
             {
                 return NotFound();
             }
-            return new Models.Measurement(response.Measurement.Id, response.Measurement.DeviceId, response.Measurement.Temperature, response.Measurement.Humidity, response.Measurement.Battery, response.Measurement.SignalStrength, response.Measurement.Timestamp.ToDateTime());
+            return new Models.Measurement(response.Measurement.Id, response.Measurement.DeviceId, response.Measurement.Data, response.Measurement.Timestamp.ToDateTime());
         }
 
         [HttpGet("day")]
@@ -45,7 +45,7 @@ namespace ApiGateway.Controllers
             var temps = new List<Models.Measurement>();
             foreach (var measurement in response.Measurements)
             {
-                temps.Add(new Models.Measurement(measurement.Measurement.Id, measurement.Measurement.DeviceId, measurement.Measurement.Temperature, measurement.Measurement.Humidity, measurement.Measurement.Battery, measurement.Measurement.SignalStrength, measurement.Measurement.Timestamp.ToDateTime()));
+                temps.Add(new Models.Measurement(measurement.Measurement.Id, measurement.Measurement.DeviceId, measurement.Measurement.Data, measurement.Measurement.Timestamp.ToDateTime()));
             }
             return temps.ToArray();
         }
@@ -57,10 +57,7 @@ namespace ApiGateway.Controllers
             var response = await _client.CreateMeasurementAsync(new Grpc.CreateMeasurementRequest
             {
                 DeviceId = newMeasurement.DeviceId,
-                Temperature = newMeasurement.Temperature,
-                Humidity = newMeasurement.Humidity,
-                Battery = newMeasurement.Battery,
-                SignalStrength = newMeasurement.SignalStrength,
+                Data = newMeasurement.Data,
                 Timestamp = Timestamp.FromDateTime(DateTime.Now.ToUniversalTime())
             });
             return CreatedAtAction(nameof(GetCurrent), new { deviceId = newMeasurement.DeviceId }, newMeasurement);

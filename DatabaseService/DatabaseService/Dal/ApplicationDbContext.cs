@@ -26,7 +26,6 @@ namespace DatabaseService.Dal
             modelBuilder.Entity<Measurement>(entity =>
             {
                 entity.Property(e => e.DeviceId).HasColumnName("device_id");
-                entity.Property(e => e.SignalStrength).HasColumnName("signal_strength");
             });
 
         }

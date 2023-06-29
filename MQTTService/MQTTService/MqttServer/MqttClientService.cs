@@ -36,7 +36,7 @@ namespace MQTTService.MqttService
             mqttClient.DisconnectedAsync += OnDisconnected;
             mqttClient.ApplicationMessageReceivedAsync += OnMessageReceived;
 
-            this.logger.LogInformation("MQTT client created");
+            this.logger.LogInformation("MQTT client created.");
         }
 
         public async Task StartAsync()
@@ -95,7 +95,6 @@ namespace MQTTService.MqttService
             // TODO: Check first if device with the given friendly_name exists. (low prio)
             else
             {
-                dynamic messageData = JsonConvert.DeserializeObject(payload);
                 var friendly_name = arg.ApplicationMessage.Topic.Split('/')[1];
 
                 logger.LogInformation("Incoming data message from " + friendly_name);
@@ -103,10 +102,7 @@ namespace MQTTService.MqttService
                 var response = await grpcClient.CreateMeasurementByFriendlyNameAsync(new CreateMeasurementByFriendlyNameRequest
                 {
                     FriendlyName = friendly_name,
-                    Temperature = messageData.temperature,
-                    Humidity = messageData.humidity,
-                    Battery = messageData.battery,
-                    SignalStrength = messageData.linkquality,
+                    Data = payload,
                     Timestamp = Timestamp.FromDateTime(DateTime.Now.ToUniversalTime())
                 });
 

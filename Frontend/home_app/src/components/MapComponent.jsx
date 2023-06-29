@@ -18,7 +18,7 @@ const MapComponent = () => {
 
   // Load background image from API endpoint on mount
   useEffect(() => {
-    fetch('https://homeapp.ddns.net/api/devices/2')
+    fetch('https://homeapp.ddns.net/api/devices/1')
       .then(response => response.blob())
       .then(image => {
         const url = URL.createObjectURL(image);
