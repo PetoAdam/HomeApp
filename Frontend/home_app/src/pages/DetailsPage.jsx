@@ -23,19 +23,25 @@ const DetailsPage = () => {
   }, []);
 
   const handleCardClick = (deviceId) => {
-    setSelectedDevice(deviceId);
+    setSelectedDevice((prevSelectedDevice) =>
+      prevSelectedDevice === deviceId ? null : deviceId
+    );
   };
 
   return (
     <div style={{ marginTop: "100px" }}>
       {devices.map((device) => (
-        <DataCard
-          device={device}
-          onClick={() => handleCardClick(device.id)}
-          isActive={selectedDevice === device.id}
-        />
+        <React.Fragment key={device.id}>
+          <DataCard
+            device={device}
+            onClick={() => handleCardClick(device.id)}
+            isActive={selectedDevice === device.id}
+          />
+          {selectedDevice === device.id && (
+            <LineChartContainer deviceId={selectedDevice} />
+          )}
+        </React.Fragment>
       ))}
-      {selectedDevice && <LineChartContainer deviceId={selectedDevice} />}
     </div>
   );
 };

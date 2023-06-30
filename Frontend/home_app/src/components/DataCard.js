@@ -62,7 +62,7 @@ const DataCard = ({ device, onClick, isActive }) => {
           className={`data-card ${isActive ? 'active' : ''}`}
           onClick={onClick}
           >
-            <div>Device: {device.name}</div>
+            <div><b>{device.name}</b></div>
             {renderDataRows()}
             <div className="timestamp">{formattedTimestamp}</div>
         </div>

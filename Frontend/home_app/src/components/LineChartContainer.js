@@ -8,7 +8,9 @@ const LineChartContainer = ({ deviceId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`https://homeapp.ddns.net/api/measurements/day?deviceId=${deviceId}`);
+        const res = await fetch(
+          `https://homeapp.ddns.net/api/measurements/day?deviceId=${deviceId}`
+        );
         if (!res.ok) {
           throw new Error(res.statusText);
         }
@@ -49,15 +51,13 @@ const LineChartContainer = ({ deviceId }) => {
     ));
   };
 
-  return (
-    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-      {processData().map((chart, index) => (
-        <div key={index} style={{ flexBasis: '50%', maxWidth: '600px', padding: '20px' }}>
-          {chart}
-        </div>
-      ))}
+  return <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+  {processData().map((chart, index) => (
+    <div key={index} style={{ flexBasis: '50%', maxWidth: '600px', padding: '10px' }}>
+      {chart}
     </div>
-  );
+  ))}
+</div>;
 };
 
 export default LineChartContainer;
