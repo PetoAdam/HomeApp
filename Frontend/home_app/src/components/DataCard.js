@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './DataCardStyle.css';
 
-const DataCard = () => {
+const DataCard = ({ device, onClick, isActive }) => {
     const [data, setData] = useState('');
     const [timestamp, setTimestamp] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetch('https://homeapp.ddns.net/api/measurements/current?deviceId=2');
+            const res = await fetch(`https://homeapp.ddns.net/api/measurements/current?deviceId=${device.id}`);
             const json = await res.json();
             setData(JSON.parse(json.data));
             setTimestamp(json.timestamp);
@@ -58,7 +58,11 @@ const DataCard = () => {
       };
 
     return (
-        <div className="data-card">
+        <div 
+          className={`data-card ${isActive ? 'active' : ''}`}
+          onClick={onClick}
+          >
+            <div>Device: {device.name}</div>
             {renderDataRows()}
             <div className="timestamp">{formattedTimestamp}</div>
         </div>
