@@ -32,4 +32,8 @@ server {
         location /pc {
                 proxy_pass http://192.168.0.121:80;
         }
+
+        location /cam {
+                proxy_pass http://192.168.0.200:80;
+        }
 }
