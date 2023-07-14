@@ -26,7 +26,7 @@ namespace DatabaseService.Services
         {
             try
             {
-                var dbMeasurement = await _context.Measurements.FirstOrDefaultAsync(m => m.Timestamp == _context.Measurements.Max(x => x.Timestamp) && m.DeviceId == request.DeviceId);
+                var dbMeasurement = await _context.Measurements.Where(m => m.DeviceId == request.DeviceId).OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync();
                 if (dbMeasurement == null)
                 {
                     return new MeasurementResponse();
@@ -36,6 +36,7 @@ namespace DatabaseService.Services
                     Measurement = new Measurement
                     {
                         Id = dbMeasurement.Id,
+                        DeviceId = dbMeasurement.DeviceId,
                         Data = dbMeasurement.Data,
                         Timestamp = Timestamp.FromDateTime(DateTime.SpecifyKind(dbMeasurement.Timestamp, DateTimeKind.Utc))
                     }
