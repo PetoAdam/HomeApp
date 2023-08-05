@@ -1,0 +1,18 @@
+{
+  "profiles": {
+    "SpotifyService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5045;https://localhost:7045"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  }
+}

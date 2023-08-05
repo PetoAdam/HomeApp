@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>1f03d075-f6bc-4180-a7a4-8e3ccb95a2b3</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Protos\spotify.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\spotify.proto" GrpcServices="Server" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.52.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Logging" Version="6.25.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.11" />
+  </ItemGroup>
+
+</Project>

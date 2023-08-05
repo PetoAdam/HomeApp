@@ -15,7 +15,7 @@
     <Protobuf Include="Protos\location.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\device.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\measurement.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\spotify.proto" GrpcServices="Client" />
   </ItemGroup>
 
   <ItemGroup>
