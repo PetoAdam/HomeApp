@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using SpotifyService.Authentication;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using System.Net;
+using System.Text;
 
 namespace SpotifyService.Services
 {
@@ -17,8 +19,7 @@ namespace SpotifyService.Services
         // curl --request GET \
         //--url https://api.spotify.com/v1/me/player/devices \
         //--header 'Authorization: Bearer 1POdFZRZbvb...qqillRxMr2z'
-        private string DEVICE_ID = Environment.GetEnvironmentVariable("SPOTIFY_DEVICE_ID");;
-        private const string DEFAULT_TRACK_ID = ("SPOTIFY_DEFAULT_TRACK_ID");
+        private string DEVICE_ID = Environment.GetEnvironmentVariable("SPOTIFY_DEVICE_ID");
         private readonly ILogger<PlaybackService> _logger;
         private readonly ISpotifyTokenManager _tokenManager;
 
@@ -89,41 +90,78 @@ namespace SpotifyService.Services
 
         public override async Task<Empty> ContinuePlayback(Empty request, ServerCallContext context)
         {
+            // Playback is always started/continued on the spotifyd device.
             string accessToken = await _tokenManager.GetValidAccessTokenAsync();
-            _logger.LogInformation("Access token: " + accessToken);
-            string apiUrl = "https://api.spotify.com/v1/me/player/play?deviceId=" + DEVICE_ID;
 
-            // Check if there is an active playback
-            string playerUrl = "https://api.spotify.com/v1/me/player";
+            string playbackStatusUrl = "https://api.spotify.com/v1/me/player";
+            string transferPlaybackUrl = "https://api.spotify.com/v1/me/player";
+            string playUrl = "https://api.spotify.com/v1/me/player/play?device_id=" + DEVICE_ID;
+
 
             using (var httpClient = new HttpClient())
             {
+                bool transferPlayback = false;
+                bool isPlaying = false;
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                var playerActiveResponse = await httpClient.GetAsync(playerUrl);
 
-                if (playerActiveResponse.IsSuccessStatusCode)
+                // Check playback status
+                var playbackStatusResponse = await httpClient.GetAsync(playbackStatusUrl);
+                if (playbackStatusResponse.IsSuccessStatusCode)
                 {
-                    _logger.LogInformation("Playback already exists, continuing...");
-                    var response = await httpClient.PutAsync(apiUrl, null);
-
-                    if (!response.IsSuccessStatusCode)
+                    if (playbackStatusResponse.StatusCode == HttpStatusCode.NoContent)
                     {
-                        throw new RpcException(new Status(StatusCode.Internal, "Error while continuing playback"));
+                        // No active playback available
+                        transferPlayback = true;
+                    }
+                    else
+                    {
+                        // There is an active playback
+                        // Check device. If it is the correct device, playback transfer is not neccessary
+                        var playbackStatusResponseBody = await playbackStatusResponse.Content.ReadAsStringAsync();
+                        dynamic playbackData = JsonConvert.DeserializeObject(playbackStatusResponseBody);
+                        string deviceId = playbackData.device.id;
+                        isPlaying = playbackData.is_playing;
+                        if(deviceId != DEVICE_ID)
+                        {
+                            transferPlayback = true;
+                        }
                     }
                 }
                 else
                 {
-                    _logger.LogInformation("No active playback exists, creating new one...");
+                    throw new RpcException(new Status(StatusCode.Internal, "Error while getting current playback info"));
+                }
 
-                    // If no active playback, start playing the default track
-                    string defaultTrackApiUrl = $"https://api.spotify.com/v1/me/player/play?deviceId={DEVICE_ID}&uris=spotify:track:{DEFAULT_TRACK_ID}";
-                    var response = await httpClient.PutAsync(defaultTrackApiUrl, null);
-
-                    if (!response.IsSuccessStatusCode)
+                if (transferPlayback)
+                {
+                    // Transfer playback
+                    var requestBody = new
                     {
-                        throw new RpcException(new Status(StatusCode.Internal, "Error while starting playback with the default track"));
+                        device_ids = new string[] { DEVICE_ID },
+                        play = true
+                    };
+                    var requestBodyJson = JsonConvert.SerializeObject(requestBody);
+                    var content = new StringContent(requestBodyJson, Encoding.UTF8, "application/json");
+                    
+                    var transferResponse = await httpClient.PutAsync(transferPlaybackUrl, content);
+
+                    if (!transferResponse.IsSuccessStatusCode)
+                    {
+                        throw new RpcException(new Status(StatusCode.Internal, "Error while transferring playback"));
                     }
                 }
+                
+                // Start playing if not playing already
+                if(!isPlaying)
+                {
+                    var response = await httpClient.PutAsync(playUrl, null);
+
+                    if (response.StatusCode != HttpStatusCode.Accepted)
+                    {
+                        throw new RpcException(new Status(StatusCode.Internal, "Error while continuing playback"));
+                    }
+                }
+                
             }
 
             return new Empty();
@@ -259,6 +297,11 @@ namespace SpotifyService.Services
 
                 if (response.IsSuccessStatusCode)
                 {
+                    if (response.StatusCode == HttpStatusCode.NoContent)
+                    {
+                        // No active playback available
+                        return new ListQueueResponse();
+                    }
                     var responseBody = await response.Content.ReadAsStringAsync();
                     dynamic queueData = JsonConvert.DeserializeObject(responseBody);
 
@@ -297,9 +340,16 @@ namespace SpotifyService.Services
 
                 if (response.IsSuccessStatusCode)
                 {
+                    if (response.StatusCode == HttpStatusCode.NoContent)
+                    {
+                        // No active playback available
+                        return new PlaybackInfoResponse();
+                    }
+
                     var responseBody = await response.Content.ReadAsStringAsync();
                     dynamic playbackData = JsonConvert.DeserializeObject(responseBody);
                     
+                    string deviceId = playbackData.device.id;
                     bool isPlaying = playbackData.is_playing;
                     int volume = playbackData.device.volume_percent;
                     long time = playbackData.progress_ms;

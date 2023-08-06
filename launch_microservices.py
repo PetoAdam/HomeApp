@@ -47,7 +47,6 @@ if __name__ == "__main__":
         "SPOTIFY_CLIENT_SECRET": os.environ.get("SPOTIFY_CLIENT_SECRET", ""),
         "SPOTIFY_REFRESH_TOKEN": os.environ.get("SPOTIFY_REFRESH_TOKEN", ""),
         "SPOTIFY_DEVICE_ID": os.environ.get("SPOTIFY_DEVICE_ID", ""),
-        "SPOTIFY_DEFAULT_TRACK_ID": os.environ.get("SPOTIFY_DEFAULT_TRACK_ID", "3cfOd4CMv2snFaKAnMdnvK"),
     }
 
     print("Specific Environment Variables:")
