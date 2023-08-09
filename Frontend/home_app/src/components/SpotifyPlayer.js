@@ -161,11 +161,11 @@ const SpotifyPlayer = () => {
     // Fetch current playback info every 5 seconds
     const fetchIntervalId = setInterval(() => {
       fetchCurrentPlaybackInfo();
-    }, 10000);
+    }, 3000);
 
     const queueFetchIntervalId = setInterval(() => {
       fetchQueue();
-    }, 20000);
+    }, 5000);
 
     const uiIntervalId = setInterval(() => {
       updatePlaybackProgress();
