@@ -10,22 +10,13 @@ namespace SpotifyService.Authentication
 {
     public class AuthorizationCodeSpotifyTokenManager : ISpotifyTokenManager
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private readonly HttpClient _httpClient;
 
-        private async Task<(string AccessToken, long ExpirationTime)> LoadTokenAsync(string tokenFile)
+        private (string AccessToken, long ExpirationTime) _tokenCache = (null, 0);
+
+        public AuthorizationCodeSpotifyTokenManager(IHttpClientFactory httpClientFactory)
         {
-            if (File.Exists(tokenFile))
-            {
-                string tokenData = await File.ReadAllTextAsync(tokenFile);
-                var tokenObj = JsonConvert.DeserializeObject<dynamic>(tokenData);
-
-                string accessToken = tokenObj.access_token;
-                long expirationTime = tokenObj.expiration_time;
-
-                return (accessToken, expirationTime);
-            }
-
-            return (null, 0);
+            _httpClient = httpClientFactory.CreateClient("SpotifyApiClient");
         }
 
         public async Task<string> GetValidAccessTokenAsync()
@@ -49,35 +40,76 @@ namespace SpotifyService.Authentication
                     }
                 };
 
+                var byteArray = Encoding.ASCII.GetBytes($"{clientId}:{clientSecret}");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
                 var content = new FormUrlEncodedContent(new[]
                 {
                     new KeyValuePair<string, string>("grant_type", "refresh_token"),
                     new KeyValuePair<string, string>("refresh_token", refreshToken)
                 });
 
-                var byteArray = Encoding.ASCII.GetBytes($"{clientId}:{clientSecret}");
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
-                var response = await _httpClient.PostAsync(authOptions.url, content);
-
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    dynamic tokenResponse = JsonConvert.DeserializeObject(responseBody);
-                    accessToken = tokenResponse.access_token;
-                    expirationTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + (long)tokenResponse.expires_in;
+                    var response = await _httpClient.PostAsync(authOptions.url, content);
 
-                    var tokenObj = new
+                    if (response.IsSuccessStatusCode)
                     {
-                        access_token = accessToken,
-                        expiration_time = expirationTime
-                    };
+                        var responseBody = await response.Content.ReadAsStringAsync();
+                        dynamic tokenResponse = JsonConvert.DeserializeObject(responseBody);
+                        accessToken = tokenResponse.access_token;
+                        expirationTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + (long)tokenResponse.expires_in;
 
-                    await File.WriteAllTextAsync(tokenFile, JsonConvert.SerializeObject(tokenObj));
+                        var tokenObj = new
+                        {
+                            access_token = accessToken,
+                            expiration_time = expirationTime
+                        };
+
+                        // Update the cache with the new token
+                        _tokenCache = (accessToken, expirationTime);
+                        await File.WriteAllTextAsync(tokenFile, JsonConvert.SerializeObject(tokenObj));
+                        
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions and log errors
+                    Console.WriteLine("Error while obtaining access token: " + ex.Message);
                 }
             }
 
             return accessToken;
+        }
+
+        private async Task<(string AccessToken, long ExpirationTime)> LoadTokenAsync(string tokenFile)
+        {
+            if (_tokenCache.ExpirationTime > DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            {
+                return _tokenCache; // Return cached token if still valid
+            }
+
+            if (File.Exists(tokenFile))
+            {
+                try
+                {
+                    string tokenData = await File.ReadAllTextAsync(tokenFile);
+                    var tokenObj = JsonConvert.DeserializeObject<dynamic>(tokenData);
+
+                    string accessToken = tokenObj.access_token;
+                    long expirationTime = tokenObj.expiration_time;
+
+                    _tokenCache = (accessToken, expirationTime); // Update the cache
+
+                    return (accessToken, expirationTime);
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions and log errors
+                    Console.WriteLine("Error while loading access token: " + ex.Message);
+                }
+            }
+            return (null, 0);
         }
     }
 }

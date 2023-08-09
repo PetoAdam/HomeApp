@@ -31,6 +31,7 @@ const Navbar = ({ menuOpen, toggleMenu }) => {
           <li><Link to="/profile">Profile</Link></li>
           <li><Link to="/details">Details</Link></li>
           <li><Link to="/stream">Stream</Link></li>
+          <li><Link to="/spotify">Spotify</Link></li>
           <li><Link to="/settings">Settings</Link></li>
           <li><Link to="/logout">Logout</Link></li>
           </ul>

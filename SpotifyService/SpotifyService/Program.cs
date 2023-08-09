@@ -11,9 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddGrpc();
 
+builder.Services.AddHttpClient("SpotifyApiClient");
+
 // Inject Spotify Token Manager to the services
 // Currently using Authorization code flow to access user's playback data
 builder.Services.AddScoped<ISpotifyTokenManager, AuthorizationCodeSpotifyTokenManager>();
+
 
 var app = builder.Build();
 

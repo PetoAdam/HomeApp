@@ -54,7 +54,6 @@ namespace ApiGateway.Controllers
             if (requestBody != null)
             {
                 int volume = requestBody.Volume;
-                Console.WriteLine("Volume: " + volume);
                 var grpcRequest = new Grpc.VolumeChangeRequest { Volume = volume };
                 await _spotifyClient.ChangeVolumeAsync(grpcRequest);
                 return NoContent();

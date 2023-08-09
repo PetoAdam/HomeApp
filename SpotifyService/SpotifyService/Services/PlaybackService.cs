@@ -13,6 +13,7 @@ using System.Text;
 
 namespace SpotifyService.Services
 {
+    // TODO: Create caching mechanism for playback status and queue. Fetch data periodically and send that to requesting user.
     public class PlaybackService : SpotifyService.SpotifyServiceBase
     {   
         // This DEVICE_ID is the Spotify device ID of the home server, to obtain it run: 
@@ -22,11 +23,13 @@ namespace SpotifyService.Services
         private string DEVICE_ID = Environment.GetEnvironmentVariable("SPOTIFY_DEVICE_ID");
         private readonly ILogger<PlaybackService> _logger;
         private readonly ISpotifyTokenManager _tokenManager;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public PlaybackService(ILogger<PlaybackService> logger, ISpotifyTokenManager tokenManager)
+        public PlaybackService(ILogger<PlaybackService> logger, ISpotifyTokenManager tokenManager, IHttpClientFactory httpClientFactory)
         {
             this._logger = logger;
             this._tokenManager = tokenManager;
+            this._httpClientFactory = httpClientFactory;
         }
 
         public override async Task<TrackInfoResponse> GetTrackInfo(TrackInfoRequest request, ServerCallContext context)
@@ -38,7 +41,7 @@ namespace SpotifyService.Services
             var trackId = request.TrackId; // Assuming the TrackInfoRequest message has a field named TrackId
             var apiUrl = $"https://api.spotify.com/v1/tracks/{trackId}";
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var response = await httpClient.GetAsync(apiUrl);
@@ -74,7 +77,7 @@ namespace SpotifyService.Services
             string accessToken = await _tokenManager.GetValidAccessTokenAsync();
             string apiUrl = "https://api.spotify.com/v1/me/player/pause";
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var response = await httpClient.PutAsync(apiUrl, null);
@@ -84,6 +87,7 @@ namespace SpotifyService.Services
                     throw new RpcException(new Status(StatusCode.Internal, "Error while pausing playback"));
                 }
             }
+            _logger.LogInformation(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " \tPause");
 
             return new Empty();
         }
@@ -98,7 +102,7 @@ namespace SpotifyService.Services
             string playUrl = "https://api.spotify.com/v1/me/player/play?device_id=" + DEVICE_ID;
 
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 bool transferPlayback = false;
                 bool isPlaying = false;
@@ -164,6 +168,8 @@ namespace SpotifyService.Services
                 
             }
 
+            _logger.LogInformation(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " \tPlay");
+
             return new Empty();
         }
 
@@ -174,7 +180,7 @@ namespace SpotifyService.Services
             int volume = request.Volume;
             string apiUrl = $"https://api.spotify.com/v1/me/player/volume?volume_percent={volume}";
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var response = await httpClient.PutAsync(apiUrl, null);
@@ -185,6 +191,8 @@ namespace SpotifyService.Services
                 }
             }
 
+            _logger.LogInformation(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " \tVolume: " + volume);
+
             return new Empty();
         }
 
@@ -193,7 +201,7 @@ namespace SpotifyService.Services
             string accessToken = await _tokenManager.GetValidAccessTokenAsync();
             string apiUrl = "https://api.spotify.com/v1/me/player/next";
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var response = await httpClient.PostAsync(apiUrl, null);
@@ -204,6 +212,8 @@ namespace SpotifyService.Services
                 }
             }
 
+            _logger.LogInformation(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " \tSkip");
+
             return new Empty();
         }
 
@@ -212,7 +222,7 @@ namespace SpotifyService.Services
             string accessToken = await _tokenManager.GetValidAccessTokenAsync();
             string apiUrl = "https://api.spotify.com/v1/me/player/previous";
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var response = await httpClient.PostAsync(apiUrl, null);
@@ -223,6 +233,8 @@ namespace SpotifyService.Services
                 }
             }
 
+            _logger.LogInformation(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " \tPrevious");
+
             return new Empty();
         }
 
@@ -232,7 +244,7 @@ namespace SpotifyService.Services
             string trackId = request.TrackId;
             string apiUrl = $"https://api.spotify.com/v1/me/player/queue?uri=spotify:track:{trackId}";
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var response = await httpClient.PostAsync(apiUrl, null);
@@ -242,6 +254,8 @@ namespace SpotifyService.Services
                     throw new RpcException(new Status(StatusCode.Internal, "Error while adding song to queue"));
                 }
             }
+            
+            _logger.LogInformation(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " \tAdd to queue: " + trackId);
 
             return new Empty();
         }
@@ -252,7 +266,7 @@ namespace SpotifyService.Services
             string query = request.Query;
             string apiUrl = $"https://api.spotify.com/v1/search?q={query}&type=track";
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var response = await httpClient.GetAsync(apiUrl);
@@ -276,6 +290,8 @@ namespace SpotifyService.Services
                         songs.Add(song);
                     }
 
+                    _logger.LogInformation(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " \tSearch for: " + query);
+
                     return new SearchResponse { Songs = { songs } };
                 }
                 else
@@ -290,7 +306,7 @@ namespace SpotifyService.Services
             string accessToken = await _tokenManager.GetValidAccessTokenAsync();
             string apiUrl = "https://api.spotify.com/v1/me/player/queue";
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var response = await httpClient.GetAsync(apiUrl);
@@ -319,6 +335,8 @@ namespace SpotifyService.Services
                         queue.Add(song);
                     }
 
+                    _logger.LogInformation(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " \tList Queue");
+
                     return new ListQueueResponse { Queue = { queue } };
                 }
                 else
@@ -333,7 +351,7 @@ namespace SpotifyService.Services
             string accessToken = await _tokenManager.GetValidAccessTokenAsync();
             string apiUrl = "https://api.spotify.com/v1/me/player";
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var response = await httpClient.GetAsync(apiUrl);
@@ -358,6 +376,8 @@ namespace SpotifyService.Services
                     string artist = playbackData.item.artists[0].name;
                     string album = playbackData.item.album.name;
                     string albumImageUri = playbackData.item.album.images[0].url ??= "";
+
+                    _logger.LogInformation(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " \tGet Playback Info");
 
                     return new PlaybackInfoResponse
                     {   

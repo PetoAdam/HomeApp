@@ -1,0 +1,176 @@
+/* Spotify Player Styles */
+.spotify-player {
+  background-color: #282828;
+  border-radius: 10px;
+  color: white;
+  padding: 20px;
+  padding-top: 100px;
+}
+
+.player-header {
+  display: flex;
+  flex-direction: column; /* Stack controls vertically on small screens */
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.track-info img {
+  width: 50%;
+  height: 50%;
+  margin: 20px;
+}
+
+.track-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center text on small screens */
+  text-align: center; /* Center text on small screens */
+}
+
+.track-title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.track-artist {
+  font-size: 1em;
+}
+
+.track-album {
+  font-size: 0.9em;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center controls horizontally on small screens */
+  margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+  /* Apply styles for landscape devices (width >= 768px) */
+  .player-header {
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+  }
+
+  .track-details {
+    align-items: left;
+    text-align: left; /* Align text to the left on larger screens */
+  }
+
+  .controls {
+    justify-content: center;
+  }
+
+  .track-info img {
+    justify-content: center;
+    width: 30%;
+    height: 30%;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+.search-box {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.search-box input {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ddd;
+}
+
+.search-box button {
+  background-color: #1db954;
+  border: none;
+  padding: 5px 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.search-results {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.search-results button {
+  background-color: #1db954;
+  border: none;
+  padding: 5px 10px;
+  color: white;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.queue {
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 1.2em;
+}
+
+.controls .control-button {
+  background-color: transparent;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: white;
+  margin: 0 20px;
+}
+
+.controls .play-pause-button {
+  font-size: 48px;
+}
+
+.controls .prev-button,
+.controls .skip-button {
+  font-size: 32px;
+}
+
+.volume-icon {
+  padding-right: 10px;
+  font-size: 20px;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.volume-slider {
+  max-width: 80%; /* Adjust as needed */
+}
+
+.progress {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.progress-current .progress-duration{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playback-slider {
+  display: flex;
+  width: 80%;
+  background-color: #43a047;
+}
+
+/* Add more styling as needed */
