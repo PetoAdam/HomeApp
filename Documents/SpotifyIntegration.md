@@ -113,7 +113,7 @@ Restart=always
 
 RestartSec=12
 
-Environment=SPOTIFYD_CONFIG_PATH=/home/ubuntu/.config/spotifyd/spotifyd.conf
+Environment=SPOTIFYD_CONFIG_PATH=/etc/spotifyd.conf
 
 [Install]
 
@@ -126,6 +126,7 @@ WantedBy=default.target
 
 ```
 sudo systemctl daemon-reload
+sudo systemctl enable spotifyd.service
 sudo systemctl start spotifyd.service
 sudo systemctl status spotifyd.service
 ```
