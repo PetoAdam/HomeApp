@@ -147,3 +147,27 @@ It requires a couple of environmental variables to be set:
 
 - SPOTIFY_DEVICE_ID:
 https://developer.spotify.com/documentation/web-api/reference/get-a-users-available-devices. Get the device id for the spotifyd device.
+
+## Possible problems
+
+There might be some errors with alsa and its bluetooth settings. It might be needed to configure the following files:
+
+/etc/bluealsa/bluealsa.conf:
+
+```
+[General]
+profile = a2dp
+device = <MAC address of bluetooth device>
+```
+
+/etc/asound.conf:
+```
+pcm.!default {
+    type plug
+    slave.pcm {
+        type bluealsa
+        device "<MAC address of bluetooth device>"
+        profile "a2dp"
+    }
+}
+```
