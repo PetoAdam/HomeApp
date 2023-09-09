@@ -5,6 +5,12 @@ import './NavbarStyle.css';
 import discordImg from '../images/discord.png'
 
 const Navbar = ({ menuOpen, toggleMenu }) => {
+
+  const handleZigbeeClick = () => {
+    // Redirect the user to the external URL
+    window.location.href = 'https://homeapp.ddns.net/mqtt/';
+  };
+
   return (
     <nav className={`navbar ${menuOpen ? 'open' : ''}`}>
       <div className="navbar-left">
@@ -32,6 +38,7 @@ const Navbar = ({ menuOpen, toggleMenu }) => {
           <li><Link to="/details">Details</Link></li>
           <li><Link to="/stream">Stream</Link></li>
           <li><Link to="/spotify">Spotify</Link></li>
+          <li><Link onClick={handleZigbeeClick}>Zigbee</Link></li>
           <li><Link to="/settings">Settings</Link></li>
           <li><Link to="/logout">Logout</Link></li>
           </ul>

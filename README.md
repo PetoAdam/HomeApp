@@ -35,6 +35,7 @@ Add this to the bottom:
 ```
 
 - Note: when using spotifyd for the Spotify integration, it should be added as a systemd service. More information can be found [here](Documents/SpotifyIntegration.md).
+- Note: make sure to add all the neccessary environment variables to ```/etc/environment``` if you want all the microservices to work properly.
 
 For the backend:   
 - make sure .NET 6 is installed, the project should run both on Linux and Windows
