@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './SpotifyPlayerStyle.css';
 
 import { FaPlay, FaPause, FaForward, FaBackward, FaVolumeUp } from "react-icons/fa";
+import Loading from './Loading';
 
 
 const SpotifyPlayer = () => {
@@ -194,7 +195,7 @@ const SpotifyPlayer = () => {
     <div className="spotify-player">
       {/* Show loading screen while isLoading is true */}
       {isLoading ? (
-        <div className="loading-screen">Loading...</div>
+        <Loading />
       ) : (
         // Render the player content once data is fetched
         <div>

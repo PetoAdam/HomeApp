@@ -1,0 +1,127 @@
+.speaker-component {
+    background-color: #36393e;
+    color: white;
+    padding: 0px;
+    border-radius: 10px;
+    margin-top: 65px;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .header h2 {
+    font-size: 1.5em;
+  }
+  
+  .search-button {
+    background-color: #4caf50;
+    border: none;
+    padding: 5px 10px;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .search-button svg {
+    margin-right: 5px;
+  }
+  
+  .connected-speaker-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #43a047;
+    border-radius: 5px;
+    width: 80%; /* Default width for narrow screens */
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+      /* On screens with a minimum width of 768px (wide screens), use a width of 50% */
+      .connected-speaker-card {
+          width: 50%;
+      }
+  }
+  
+  .connected-speaker-card span {
+    flex: 2;
+    font-size: 1em;
+    margin: 5px 20px;
+  }
+  
+  .connected-speaker-card .disconnect-button {
+    background-color: #36393e;
+    border: none;
+    padding: 5px 10px;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .connected-speaker-card .disconnect-button svg {
+    margin-right: 5px;
+  }
+  
+  .connected-speakers h3,
+  .search-results h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    background-color: #36393e;
+    border-radius: 5px;
+  }
+  
+  span {
+    flex: 1;
+    font-size: 1em;
+  }
+  
+  .disconnect-button {
+    background-color: #43a047;
+    border: none;
+    padding: 5px 10px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .disconnect-button svg {
+    margin-right: 5px;
+  }
+  
+  .no-speakers {
+    width: 50%;
+    height: 100px;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
+    margin: auto;
+    text-align: center;
+    font-size: 1.2em;
+  }
+  
+  .loading {
+    text-align: center;
+    font-size: 1.2em;
+  }
+
+  

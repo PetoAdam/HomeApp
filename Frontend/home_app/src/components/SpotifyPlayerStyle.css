@@ -4,7 +4,6 @@
   border-radius: 10px;
   color: white;
   padding: 20px;
-  padding-top: 100px;
 }
 
 .player-header {
@@ -114,7 +113,7 @@
 }
 
 .queue {
-  max-height: 150px;
+  max-height: 1000px;
   overflow-y: auto;
   font-size: 1.2em;
 }
@@ -150,7 +149,7 @@
 }
 
 .volume-slider {
-  max-width: 80%; /* Adjust as needed */
+  max-width: 75%; /* Adjust as needed */
 }
 
 .progress {
@@ -169,7 +168,7 @@
 
 .playback-slider {
   display: flex;
-  width: 80%;
+  width: 75%;
   background-color: #43a047;
 }
 
