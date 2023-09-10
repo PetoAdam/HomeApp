@@ -138,13 +138,45 @@ const SpotifyPlayer = () => {
   };
 
   const handleSearch = async () => {
-    // Call your API's search endpoint with the searchQuery
-    // Update setSearchResults with the response
+    if(searchQuery == ""){
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://homeapp.ddns.net/api/spotify/search?query=${searchQuery}`);
+      const searchData = await response.json();
+      setSearchResults(searchData.songs);
+    } catch (error) {
+      console.error('Error searching for tracks:', error);
+    }
+  };
+
+  const handleSearchInputChange = (e) => {
+    // First, update the search query using setSearchQuery
+    setSearchQuery(e.target.value);
+    handleSearch();
   };
 
   const addToQueue = async (track) => {
-    // Call your API's addToQueue endpoint with the selected track
-    // Update the queue state
+    try {
+      const response = await fetch('https://homeapp.ddns.net/api/spotify/queue', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ trackId: track.trackId }), // Adjust the payload as per your API
+      });
+  
+      if (response.ok) {
+        // Optionally, you can update the queue state to reflect the changes immediately.
+        fetchQueue(); // Fetch the updated queue after adding to it.
+      } else {
+        console.error('Error adding to queue');
+      }
+    } catch (error) {
+      console.error('Error adding to queue:', error);
+    }
+    setSearchQuery("");
   };
 
   useEffect(() => {
@@ -199,6 +231,26 @@ const SpotifyPlayer = () => {
       ) : (
         // Render the player content once data is fetched
         <div>
+          <div className="search-box">
+            <input className="search-input"
+              type="text"
+              placeholder="Search for tracks"
+              value={searchQuery}
+              onChange={(e) => handleSearchInputChange(e)}
+            />
+          </div>
+            {searchResults.length > 0 && searchQuery != "" && 
+              <div className="search-results">
+                {searchResults.map((track) => (
+                    <div className="search-item" key={track.trackId} onClick={() => addToQueue(track)}>
+                      <img src={track.albumImageUri} alt="Album Cover" />
+                      <div className="track-title">{track.title}</div>
+                      <div className="track-artist">{track.artist}</div>
+                    </div>
+                  ))
+                }
+              </div>
+            }
           <div className="player-header">
             <div className="track-info">
               <img src={currentTrack.albumImageUri} alt="Album Cover" />
@@ -271,8 +323,10 @@ const SpotifyPlayer = () => {
 
           <div className="queue">
             {queue.map((queuedTrack) => (
-              <div key={queuedTrack.track_id}>
-                {queuedTrack.title} - {queuedTrack.artist} - {queuedTrack.album}
+              <div className="search-item" key={queuedTrack.track_id}>
+                <img src={queuedTrack.albumImageUri} alt="Album Cover" />
+                <div className="track-title">{queuedTrack.title}</div>
+                <div className="track-artist">{queuedTrack.artist}</div>
               </div>
             ))}
           </div>

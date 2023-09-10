@@ -172,4 +172,45 @@
   background-color: #43a047;
 }
 
+.search-item {
+  border-radius: 10px;
+  padding: 10px;
+  gap: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.search-item:hover {
+  background-color: #4caf50;
+}
+
+.search-input {
+  font-size: medium;
+  background-color: #282828; /* Dark grey background */
+  border: none;
+  border-radius: 25px; /* Curved edges */
+  padding: 10px 20px; /* Adjust padding as needed */
+  color: white; /* White text color */
+}
+
+.search-input::placeholder {
+  color: white; /* White placeholder text color */
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+/* Style the search icon (you may need to adjust the icon size) */
+.search-input::after {
+  content: "\1F50D"; /* Unicode for search icon */
+  font-size: 20px; /* Adjust icon size as needed */
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white; /* White icon color */
+}
+
 /* Add more styling as needed */
