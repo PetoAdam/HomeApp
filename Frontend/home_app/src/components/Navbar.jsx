@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './NavbarStyle.css';
 
 import discordImg from '../images/discord.png'
+import spotifyImg from '../images/spotify.png'
 
 const Navbar = ({ menuOpen, toggleMenu }) => {
 
@@ -27,9 +28,9 @@ const Navbar = ({ menuOpen, toggleMenu }) => {
         </Link>
       </div>
       <div className="navbar-right">
-        <a href="https://discord.gg/hXCwzF4JkX">
-          <img src={discordImg} alt="Discord" />
-        </a>
+        <Link to="/spotify">
+          <img src={spotifyImg} alt="Spotify" />
+        </Link>
       </div>
       <div className="navbar-menu">
         <ul className={`nav-menu ${menuOpen ? 'show' : ''}`}>
@@ -41,8 +42,8 @@ const Navbar = ({ menuOpen, toggleMenu }) => {
           <li><Link onClick={handleZigbeeClick}>Zigbee</Link></li>
           <li><Link to="/settings">Settings</Link></li>
           <li><Link to="/logout">Logout</Link></li>
-          </ul>
-        </div>
+        </ul>
+      </div>
     </nav>
   );
 }

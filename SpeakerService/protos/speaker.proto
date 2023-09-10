@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package HomeApp;
+
+service SpeakerService {
+    rpc ListPairableDevices (ListPairableDevicesRequest) returns (ListPairableDevicesResponse);
+    rpc ConnectDevice (ConnectDeviceRequest) returns (ConnectDeviceResponse);
+    rpc DisconnectDevice (DisconnectDeviceRequest) returns (DisconnectDeviceResponse);
+    rpc ListConnectedSpeakers (ListConnectedSpeakersRequest) returns (ListConnectedSpeakersResponse);
+}
+
+message ListPairableDevicesRequest {}
+message ListPairableDevicesResponse {
+    repeated DeviceInfo devices = 1;
+}
+
+message ConnectDeviceRequest {
+    string device_address = 1;
+}
+
+message ConnectDeviceResponse {
+    bool success = 1;
+}
+
+message DisconnectDeviceRequest {
+    string device_address = 1;
+}
+
+message DisconnectDeviceResponse {
+    bool success = 1;
+}
+
+message ListConnectedSpeakersRequest {}
+message ListConnectedSpeakersResponse {
+    repeated DeviceInfo speakers = 1;
+}
+
+message DeviceInfo {
+    string name = 1;
+    string address = 2;
+    string type = 3;
+}

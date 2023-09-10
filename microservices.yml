@@ -10,6 +10,9 @@ microservices:
 
   - name: Frontend
     command: npm start --prefix Frontend/home_app
+  
+  - name: SpeakerService
+    command: python3 SpeakerService/speaker_service.py
 
     # Spotifyd is launched as a systemd service on startup
   - name: Spotify

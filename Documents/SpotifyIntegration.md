@@ -107,7 +107,7 @@ After=network-online.target
 
 [Service]
 
-ExecStart=/bin/bash -c "sleep 20 && python3 /home/ubuntu/Projects/HomeApp/SpeakerService/auto_connect_speaker.py && export PULSE_SERVER=127.0.0.1 && /usr/bin/spotifyd --no-daemon" 
+ExecStart=/bin/bash -c "python3 /home/ubuntu/Projects/HomeApp/SpeakerService/auto_connect_speaker.py && export PULSE_SERVER=127.0.0.1 && /usr/bin/spotifyd --no-daemon" 
 
 Restart=always
 
