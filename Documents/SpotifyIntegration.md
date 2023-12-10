@@ -107,11 +107,11 @@ After=network-online.target
 
 [Service]
 
-ExecStart=/bin/bash -c "python3 /home/ubuntu/Projects/HomeApp/SpeakerService/auto_connect_speaker.py && export PULSE_SERVER=127.0.0.1 && /usr/bin/spotifyd --no-daemon" 
+ExecStart=/bin/bash -c "export PULSE_SERVER=127.0.0.1 && sudo -u <YOUR_USERNAME> /usr/bin/spotifyd --no-daemon" 
 
 Restart=always
 
-RestartSec=12
+RestartSec=20
 
 Environment=SPOTIFYD_CONFIG_PATH=/etc/spotifyd.conf
 
@@ -120,7 +120,17 @@ Environment=SPOTIFYD_CONFIG_PATH=/etc/spotifyd.conf
 WantedBy=default.target
  ```
 
- This service file has the auto reconnect feature added to it, but it can be changed if for example a wired speaker is used. To change the service just alter the value of <b>ExecStart</b>. 
+ Make sure to add the option to access this service without using a password for sudo. To make that open visudo:
+ ```
+ sudo visudo
+ ```
+
+ and add these lines to the end:
+ ```
+ Cmnd_Alias USER_SERVICES = /usr/bin/systemctl start spotifyd.service, /usr/bin/systemctl stop spotifyd.service, /usr/bin/systemctl restart spotifyd.service, /usr/bin/systemctl status spotifyd.service
+
+<YOUR USERNAME> ALL=NOPASSWD: USER_SERVICES
+ ```
 
  After this, make sure to reload systemctl, start the service and check if it runs properly.
 
@@ -150,7 +160,23 @@ https://developer.spotify.com/documentation/web-api/reference/get-a-users-availa
 
 ## Possible problems
 
-There might be some errors with alsa and its bluetooth settings. It might be needed to configure the following files:
+There might be some errors with alsa and its bluetooth settings. It might be needed to configure the following files manually:
+
+~/.asoundrc:
+```
+pcm.!default {
+    type plug
+    slave.pcm {
+        type bluealsa
+        device "<MAC address of bluetooth device>"
+        profile "a2dp"
+    }
+}
+```
+- Note: this file should be updated every time a bluetooth speaker is connected via the SpeakerService. 
+---
+
+If you want to use global parameters instead of user-specific ones, you might need to configure these (by default, these file are not set):
 
 /etc/bluealsa/bluealsa.conf:
 

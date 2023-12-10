@@ -46,7 +46,8 @@ def list_pairable_devices():
             device_address = device_info[0]
             device_name = ' '.join(device_info[1:])
             device_type = subprocess.check_output(['bluetoothctl', 'info', device_address], universal_newlines=True)
-            if("Audio Sink" in device_type):
+            print(device_type)
+            if("Audio Sink" in device_type or "audio-card" in device_type or "audio-headphones" in device_type):
                 devices.append({'address': device_address, 'name': device_name, 'type': device_type})
     return devices
 
