@@ -1,75 +1,61 @@
 import React, { useState, useEffect } from "react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import EmailLogin from "../components/EmailLogin";
+import UserProfile from "../components/UserProfile";
+import UserService from "../services/UserService";
 import './ProfilePageStyle.css';
 
 const ProfilePage = () => {
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [userInfo, setUserInfo] = useState([]);
+  const [token, setToken] = useState(localStorage.getItem('access_token'));
+
+  const logout = () => {
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('access_token_expires_in');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user_id');
+    document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+    window.location.reload();
+  }
 
   useEffect(() => {
-    if(!token){
-      const checkForCookie = () => {
-        const token = document.cookie
-          .split("; ")
-          .find(row => row.startsWith("token="))
-          ?.split("=")[1];
-        if (token) {
-          setToken(token);
-          localStorage.setItem('token', token);
+    const checkForToken = () => {
+      if(!token){
+        const storedToken = localStorage.getItem('access_token');
+        if (storedToken) {
+          setToken(storedToken);
+          UserService.setTokens();
         } else {
-          setTimeout(checkForCookie, 100); // wait 100ms before checking again
-        }
-      };
-      checkForCookie();
-    }
-  }, [token]);
-
-  useEffect(() => {
-    if (token) {
-      const fetchData = async () => {
-        try {
-          const res = await fetch('https://homeapp.ddns.net/api/users/1', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          if (!res.ok) {
-            throw new Error(res.statusText);
+          const accessTokenCookie = document.cookie.split(';').find(row => row.trim().startsWith('access_token='));
+          if (accessTokenCookie) {
+            const accessToken = accessTokenCookie.split('=')[1];
+            setToken(accessToken);
+            UserService.setTokens();
           }
-          const json = await res.json();
-          setUserInfo(json);
-        } catch (err) {
-          console.error(err);
         }
-      };
-      fetchData();
-    }
-  }, [token]);
-  
+      }
+      if(!token){
+        setTimeout(checkForToken, 100); // wait 100ms before checking again
+      }
+    };
 
-  
+    checkForToken();
+  }, [token]);
 
   return (
-    <div className="top">
+    <div className="center-content">
       {token ? (
-        <div>
-          <p>The token is: {token}</p>
-          <p>The user is: {userInfo.userName}</p>
-        </div>
+        <>
+          <UserProfile />
+          <button className="logout-button" onClick={logout}>Logout</button>
+        </>
       ) : (
         <>
-          <EmailLogin>
-          </EmailLogin>
-
+          <EmailLogin />
           <hr />
-
-          <GoogleLoginButton>
-          </GoogleLoginButton>
+          <GoogleLoginButton />
         </>
       )}
     </div>
-
   );
 };
 

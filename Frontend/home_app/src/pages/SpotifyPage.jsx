@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SpotifyPlayer from '../components/SpotifyPlayer';
 import SpeakerComponent from '../components/SpeakerComponent';
+import SpeakerService from '../services/SpeakerService';
 
 const SpotifyPage = () => {
   const [isSpotifyVisible, setIsSpotifyVisible] = useState(false);
@@ -8,9 +9,9 @@ const SpotifyPage = () => {
   useEffect(() => {
     const checkConnectedSpeakers = async () => {
       try {
-        // Fetch list of connected Bluetooth speakers
-        const response = await fetch('https://homeapp.ddns.net/api/speakers/connected'); // Replace with your API endpoint
-        const speakersData = await response.json();
+        // Fetch list of connected Bluetooth speakers using SpeakerService
+        const response = await SpeakerService.listConnectedSpeakers();
+        const speakersData = response;
         setIsSpotifyVisible(speakersData.length > 0);
       } catch (error) {
         console.error('Error fetching connected speakers:', error);

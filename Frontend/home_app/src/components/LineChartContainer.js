@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LineChart from './LineChart';
+import MeasurementService from '../services/MeasurementService';
 
 const LineChartContainer = ({ deviceId }) => {
   const [data, setData] = useState([]);
@@ -8,23 +9,17 @@ const LineChartContainer = ({ deviceId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(
-          `https://homeapp.ddns.net/api/measurements/day?deviceId=${deviceId}`
-        );
-        if (!res.ok) {
-          throw new Error(res.statusText);
-        }
-        const json = await res.json();
-        setData(json);
+        const response = await MeasurementService.listDayMeasurements(deviceId);
+        setData(response);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching day measurements:', err);
         setError(err);
       }
     };
     fetchData();
   }, [deviceId]);
 
-  if (error != null) {
+  if (error !== null) {
     return <div>An error occurred...</div>;
   }
 
@@ -51,13 +46,15 @@ const LineChartContainer = ({ deviceId }) => {
     ));
   };
 
-  return <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-  {processData().map((chart, index) => (
-    <div key={index} style={{ flexBasis: '50%', maxWidth: '600px', padding: '10px' }}>
-      {chart}
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+      {processData().map((chart, index) => (
+        <div key={index} style={{ flexBasis: '50%', maxWidth: '600px', padding: '10px' }}>
+          {chart}
+        </div>
+      ))}
     </div>
-  ))}
-</div>;
+  );
 };
 
 export default LineChartContainer;

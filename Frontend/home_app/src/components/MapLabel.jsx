@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './MapLabelStyle.css';
+import MeasurementService from '../services/MeasurementService';
 
 const MapLabel = ({ device }) => {
   const [data, setData] = useState({});
@@ -13,12 +14,13 @@ const MapLabel = ({ device }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(
-        `https://homeapp.ddns.net/api/measurements/current?deviceId=${device.id}`
-      );
-      const json = await res.json();
-      setData(JSON.parse(json.data));
-      setTimestamp(json.timestamp);
+      try {
+        const response = await MeasurementService.getCurrentMeasurement(device.id);
+        setData(JSON.parse(response.data));
+        setTimestamp(response.timestamp);
+      } catch (error) {
+        console.error('Error fetching current measurement:', error);
+      }
     };
 
     fetchData(); // load data immediately
