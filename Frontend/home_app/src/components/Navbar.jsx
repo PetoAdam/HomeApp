@@ -3,8 +3,15 @@ import { Link } from 'react-router-dom';
 import './NavbarStyle.css';
 
 import discordImg from '../images/discord.png'
+import spotifyImg from '../images/spotify.png'
 
 const Navbar = ({ menuOpen, toggleMenu }) => {
+
+  const handleZigbeeClick = () => {
+    // Redirect the user to the external URL
+    window.location.href = 'https://homeapp.ddns.net/mqtt/';
+  };
+
   return (
     <nav className={`navbar ${menuOpen ? 'open' : ''}`}>
       <div className="navbar-left">
@@ -21,9 +28,9 @@ const Navbar = ({ menuOpen, toggleMenu }) => {
         </Link>
       </div>
       <div className="navbar-right">
-        <a href="https://discord.gg/hXCwzF4JkX">
-          <img src={discordImg} alt="Discord" />
-        </a>
+        <Link to="/spotify">
+          <img src={spotifyImg} alt="Spotify" />
+        </Link>
       </div>
       <div className="navbar-menu">
         <ul className={`nav-menu ${menuOpen ? 'show' : ''}`}>
@@ -31,10 +38,12 @@ const Navbar = ({ menuOpen, toggleMenu }) => {
           <li><Link to="/profile">Profile</Link></li>
           <li><Link to="/details">Details</Link></li>
           <li><Link to="/stream">Stream</Link></li>
+          <li><Link to="/spotify">Spotify</Link></li>
+          <li><Link onClick={handleZigbeeClick}>Zigbee</Link></li>
           <li><Link to="/settings">Settings</Link></li>
           <li><Link to="/logout">Logout</Link></li>
-          </ul>
-        </div>
+        </ul>
+      </div>
     </nav>
   );
 }

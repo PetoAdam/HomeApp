@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+option csharp_namespace = "ApiGateway.Grpc";
+
+package HomeApp;
+
+message Empty {}
+
+message TrackInfoRequest {
+    string track_id = 1;
+}
+
+message TrackInfoResponse {
+    string title = 1;
+    string artist = 2;
+}
+
+message VolumeChangeRequest {
+    int32 volume = 1;
+}
+
+message SearchRequest {
+    string query = 1;
+}
+
+message Song {
+    string title = 1;
+    string artist = 2;
+    string album = 3;
+    string track_id = 4;
+    string album_image_uri = 5;
+}
+
+message SearchResponse {
+    repeated Song songs = 1;
+}
+
+message AddToQueueRequest {
+    string track_id = 1;
+}
+
+message ListQueueResponse {
+    repeated Song queue = 1;
+}
+
+message PlaybackInfoResponse {
+    bool is_playing = 1;
+    int32 volume = 2;
+    int64 time = 3; // Playback time in milliseconds
+    int64 duration = 4; // Song duration in milliseconds
+    string title = 5;
+    string artist = 6;
+    string album = 7;
+    string album_image_uri = 8;
+}
+
+service SpotifyService {
+    rpc GetTrackInfo(TrackInfoRequest) returns (TrackInfoResponse);
+    rpc PausePlayback(Empty) returns (Empty);
+    rpc ContinuePlayback(Empty) returns (Empty);
+    rpc ChangeVolume(VolumeChangeRequest) returns (Empty);
+    rpc SkipSong(Empty) returns (Empty);
+    rpc PlayPreviousSong(Empty) returns (Empty);
+    rpc SearchSongs(SearchRequest) returns (SearchResponse);
+    rpc AddToQueue(AddToQueueRequest) returns (Empty);
+    rpc ListQueue(Empty) returns (ListQueueResponse);
+    rpc GetCurrentPlaybackInfo(Empty) returns (PlaybackInfoResponse);
+}

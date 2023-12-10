@@ -4,6 +4,7 @@ import DetailsPage from './pages/DetailsPage';
 import MapPage from './pages/MapPage';
 import ProfilePage from './pages/ProfilePage';
 import StreamPage from './pages/StreamPage';
+import SpotifyPage from './pages/SpotifyPage';
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/details" element={<DetailsPage />} />
         <Route path="/stream" element={<StreamPage />} />
+        <Route path="/spotify" element={<SpotifyPage />} />
       </Routes>
     </Router>
   );

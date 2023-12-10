@@ -1,0 +1,19 @@
+microservices:
+  - name: ApiGateway
+    command: dotnet run --project ApiGateway/ApiGateway --configuration Release
+
+  - name: DatabaseService
+    command: dotnet run --project DatabaseService/DatabaseService --configuration Release
+
+  - name: MQTTService
+    command: dotnet run --project MQTTService/MQTTService --configuration Release
+
+  - name: Frontend
+    command: npm start --prefix Frontend/home_app
+  
+  - name: SpeakerService
+    command: python3 SpeakerService/speaker_service.py
+
+    # Spotifyd is launched as a systemd service on startup
+  - name: Spotify
+    command: dotnet run --project SpotifyService/SpotifyService --configuration Release
