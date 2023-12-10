@@ -17,8 +17,6 @@ The rest of the microservices use gRPC with Protobuf for communication between e
 It is possible to use IoT devices that are outside the local area network, as the REST API provides endpoints for this scenario too. Due to security concerns, these devices must authenticate and authorize themselves.
 
 ## Architecture
-
-TODO: Add updated architecture diagram. (Spotify)
 ![Architecture](Documents/Resources/HomeAppArchitecture.png)
 
 ## Getting started
