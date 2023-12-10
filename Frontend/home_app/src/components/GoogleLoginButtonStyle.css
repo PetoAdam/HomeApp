@@ -1,17 +1,11 @@
 .google-login-button {
-    background-color: 'rgba(255, 255, 255, 0.7)';
-    padding: '10px 20px';
-    border-radius: '5px';
-    border: 'none';
-    font-size: '18px';
-    font-weight: '500';
-    color: '#36393e';
-    display: flex;
-    align-items: center;
-  }
-  
-  .left img {
-    margin-top: 7px;
-    margin-right: 8px;
-  }
-  
+  display: inline-block;
+  overflow: hidden;
+  max-width: 200px; /* Set a maximum width for the container */
+}
+
+.google-login-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}

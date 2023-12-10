@@ -12,7 +12,7 @@ const ProfilePage = () => {
       const checkForCookie = () => {
         const token = document.cookie
           .split("; ")
-          .find(row => row.startsWith("token="))
+          .find(row => row.startsWith("access_token="))
           ?.split("=")[1];
         if (token) {
           setToken(token);

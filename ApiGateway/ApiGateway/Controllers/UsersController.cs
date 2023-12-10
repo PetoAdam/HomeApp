@@ -28,6 +28,38 @@ namespace ApiGateway.Controllers
             this._context = dbContext;
         }
 
+        [HttpPost("auth/refresh")]
+        public IActionResult RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
+        {   
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            var refreshToken = jwtTokenHandler.ReadToken(refreshTokenRequest.RefreshToken) as JwtSecurityToken;
+
+            // Validate the refresh token
+            // Check if the refresh token is valid
+            if (!ValidateRefreshToken(refreshToken))
+            {
+                return Unauthorized();
+            }
+            
+            // If the refresh token is valid, generate a new access token
+            var accessToken = GenerateJwtToken(refreshToken.Claims, DateTime.Now.AddDays(1));
+            var accessTokenValidity = "86400"; // seconds (seconds in a day)
+
+            // Add the JWT token to a cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = true, // for HTTPS
+                SameSite = SameSiteMode.Strict
+            };
+            Response.Cookies.Append("access_token", accessToken, cookieOptions);
+            Response.Cookies.Append("access_token_expires_in", accessTokenValidity, cookieOptions);
+            Response.Cookies.Append("refresh_token", refreshTokenRequest.RefreshToken, cookieOptions);
+
+            // Return the JWT token
+            return Ok();
+        }
+
         [HttpGet("auth/google")]
         public async Task<RedirectResult> GoogleAuth(string code)
         {
@@ -37,14 +69,14 @@ namespace ApiGateway.Controllers
 
             if (string.IsNullOrEmpty(accessToken))
             {
-                return new RedirectResult("https://homeapp.ddns.net/profile");
+                return new RedirectResult("http://homeapp.ddns.net/profile");
             }
 
             // Get the user's Google profile
             var profile = await googleClient.GetProfileAsync(accessToken);
             if (profile == null)
             {
-                return new RedirectResult("https://homeapp.ddns.net/profile");
+                return new RedirectResult("http://homeapp.ddns.net/profile");
             }
 
             // Check if the user exists in the database
@@ -85,7 +117,9 @@ namespace ApiGateway.Controllers
                 Secure = true, // for HTTPS
                 SameSite = SameSiteMode.Strict
             };
-            Response.Cookies.Append("token", token, cookieOptions);
+            Response.Cookies.Append("access_token", token.accessToken, cookieOptions);
+            Response.Cookies.Append("access_token_expires_in", token.accessTokenValidity, cookieOptions);
+            Response.Cookies.Append("refresh_token", token.refreshToken, cookieOptions);
 
 
             // Return the JWT token
@@ -93,19 +127,19 @@ namespace ApiGateway.Controllers
         }
 
         [HttpPost("auth/login")]
-        public async Task<RedirectResult> Login([FromBody] Authentication.LoginInfo loginInfo)
+        public async Task<IActionResult> Login([FromBody] Authentication.LoginInfo loginInfo)
         {
 
             if (string.IsNullOrEmpty(loginInfo.Email) || string.IsNullOrEmpty(loginInfo.Password))
             {
-                return new RedirectResult("https://homeapp.ddns.net/profile");
+                return Unauthorized();
             }
 
             // Check if the user exists in the database
             var user = await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == loginInfo.Email.ToUpper() && u.PasswordHash == Hasher.GetHashString(loginInfo.Password));
             if (user == null)
             {
-                return new RedirectResult("https://homeapp.ddns.net/profile");
+                return Unauthorized();
             }
 
             var profile = new Authentication.Profile
@@ -130,27 +164,29 @@ namespace ApiGateway.Controllers
                 Secure = true, // for HTTPS
                 SameSite = SameSiteMode.Strict
             };
-            Response.Cookies.Append("token", token, cookieOptions);
+            Response.Cookies.Append("access_token", token.accessToken, cookieOptions);
+            Response.Cookies.Append("access_token_expires_in", token.accessTokenValidity, cookieOptions);
+            Response.Cookies.Append("refresh_token", token.refreshToken, cookieOptions);
 
 
             // Return the JWT token
-            return new RedirectResult("http://homeapp.ddns.net/profile");
+            return Ok();
         }
 
         [HttpPost("auth/signup")]
-        public async Task<RedirectResult> Signup([FromBody] Authentication.LoginInfo loginInfo)
+        public async Task<IActionResult> Signup([FromBody] Authentication.LoginInfo loginInfo)
         {
 
             if (string.IsNullOrEmpty(loginInfo.Email) || string.IsNullOrEmpty(loginInfo.Password) || string.IsNullOrEmpty(loginInfo.Username))
             {
-                return new RedirectResult("https://homeapp.ddns.net/profile");
+                return Unauthorized();
             }
 
             // Check if the user exists in the database
             var user = await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == loginInfo.Email.ToUpper());
             if (user != null)
             {
-                return new RedirectResult("https://homeapp.ddns.net/profile");
+                return Unauthorized();
             }
             
             // Create a new user
@@ -194,11 +230,13 @@ namespace ApiGateway.Controllers
                 Secure = true, // for HTTPS
                 SameSite = SameSiteMode.Strict
             };
-            Response.Cookies.Append("token", token, cookieOptions);
+            Response.Cookies.Append("access_token", token.accessToken, cookieOptions);
+            Response.Cookies.Append("access_token_expires_in", token.accessTokenValidity, cookieOptions);
+            Response.Cookies.Append("refresh_token", token.refreshToken, cookieOptions);
 
 
             // Return the JWT token
-            return new RedirectResult("http://homeapp.ddns.net/profile");
+            return Ok();
         }
 
         [Authorize]
@@ -209,7 +247,7 @@ namespace ApiGateway.Controllers
             return user;
         }
 
-        private string CreateToken(Profile profile, IEnumerable<string> roles)
+        private (string accessToken, string accessTokenValidity, string refreshToken) CreateToken(Profile profile, IEnumerable<string> roles)
         {
             // Create a list of custom claims
             var claims = new List<Claim>
@@ -220,17 +258,52 @@ namespace ApiGateway.Controllers
             };
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            // Create the JWT token
+            // Create the access token
+            var accessTokenExpiration = DateTime.Now.AddDays(1);
+            var accessToken = GenerateJwtToken(claims, accessTokenExpiration);
+            var accessTokenValidity = "86400"; // seconds (seconds in a day)
+
+            // Create the refresh token
+            var refreshTokenExpiration = DateTime.MaxValue;
+            var refreshToken = GenerateJwtToken(claims, refreshTokenExpiration);
+
+            // TODO: Store refresh token
+            // TODO: Maybe token revocation for refresh tokens
+
+            // Return tokens
+            return (accessToken, accessTokenValidity, refreshToken);
+        }
+
+        private string GenerateJwtToken(IEnumerable<Claim> claims, DateTime expiration)
+        {
             var jwtToken = new JwtSecurityToken(
                 issuer: "homeapp.ddns.net",
                 audience: "homeapp.ddns.net",
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SIGNING_KEY"))), SecurityAlgorithms.HmacSha256)
+                expires: expiration,
+                signingCredentials: new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SIGNING_KEY"))),
+                    SecurityAlgorithms.HmacSha256)
             );
 
             // Generate the JWT token as a string
             return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+        }
+
+        private bool ValidateRefreshToken(JwtSecurityToken refreshToken)
+        {
+            // Check if the token is not expired, not revoked, and associated with a valid user
+            // TODO: query your storage mechanism for refresh tokens
+
+            // Currently only checks if the refresh token is valid and creates an access token based off the data of the refresh token
+
+            // Check if the refresh token is not expired
+            if (refreshToken == null || refreshToken.ValidTo < DateTime.UtcNow || refreshToken.Issuer != "homeapp.ddns.net")
+            {
+                return false;
+            }
+
+            return true;
         }
 
     }
