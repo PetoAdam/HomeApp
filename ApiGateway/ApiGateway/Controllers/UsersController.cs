@@ -30,7 +30,7 @@ namespace ApiGateway.Controllers
 
         [HttpPost("auth/refresh")]
         public IActionResult RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
-        {   
+        {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var refreshToken = jwtTokenHandler.ReadToken(refreshTokenRequest.RefreshToken) as JwtSecurityToken;
 
@@ -40,7 +40,28 @@ namespace ApiGateway.Controllers
             {
                 return Unauthorized();
             }
-            
+
+            // Get user ID from claims
+            var userId = refreshToken?.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
+            if (userId == null || !int.TryParse(userId, out var userIdInt))
+            {
+                return Unauthorized();
+            }
+
+            // Get the user's profile based on user ID
+            var user = _context.Users.FirstOrDefault(u => u.Id == userIdInt);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var profile = new Authentication.Profile
+            {
+                Id = user.Id.ToString(),
+                Name = user.UserName,
+                Email = user.Email
+            };
+
             // If the refresh token is valid, generate a new access token
             var accessToken = GenerateJwtToken(refreshToken.Claims, DateTime.Now.AddDays(1));
             var accessTokenValidity = "86400"; // seconds (seconds in a day)
@@ -55,10 +76,12 @@ namespace ApiGateway.Controllers
             Response.Cookies.Append("access_token", accessToken, cookieOptions);
             Response.Cookies.Append("access_token_expires_in", accessTokenValidity, cookieOptions);
             Response.Cookies.Append("refresh_token", refreshTokenRequest.RefreshToken, cookieOptions);
+            Response.Cookies.Append("user_id", profile.Id);
 
-            // Return the JWT token
+            // Return the JWT token and user profile
             return Ok();
         }
+
 
         [HttpGet("auth/google")]
         public async Task<RedirectResult> GoogleAuth(string code)
@@ -120,7 +143,7 @@ namespace ApiGateway.Controllers
             Response.Cookies.Append("access_token", token.accessToken, cookieOptions);
             Response.Cookies.Append("access_token_expires_in", token.accessTokenValidity, cookieOptions);
             Response.Cookies.Append("refresh_token", token.refreshToken, cookieOptions);
-
+            Response.Cookies.Append("user_id", user.Id.ToString());
 
             // Return the JWT token
             return new RedirectResult("http://homeapp.ddns.net/profile");
@@ -167,7 +190,7 @@ namespace ApiGateway.Controllers
             Response.Cookies.Append("access_token", token.accessToken, cookieOptions);
             Response.Cookies.Append("access_token_expires_in", token.accessTokenValidity, cookieOptions);
             Response.Cookies.Append("refresh_token", token.refreshToken, cookieOptions);
-
+            Response.Cookies.Append("user_id", profile.Id);
 
             // Return the JWT token
             return Ok();
@@ -233,7 +256,7 @@ namespace ApiGateway.Controllers
             Response.Cookies.Append("access_token", token.accessToken, cookieOptions);
             Response.Cookies.Append("access_token_expires_in", token.accessTokenValidity, cookieOptions);
             Response.Cookies.Append("refresh_token", token.refreshToken, cookieOptions);
-
+            Response.Cookies.Append("user_id", profile.Id);
 
             // Return the JWT token
             return Ok();

@@ -9,19 +9,21 @@ class UserService {
     const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
     const accessTokenValidity = document.cookie.split('; ').find(row => row.startsWith('access_token_expires_in')).split('=')[1];
     const refreshToken = document.cookie.split('; ').find(row => row.startsWith('refresh_token')).split('=')[1];
+    const user_id = document.cookie.split('; ').find(row => row.startsWith('user_id')).split('=')[1];
   
     localStorage.setItem('access_token', accessToken);
     localStorage.setItem('access_token_expires_in', (Date.now() + Number(accessTokenValidity) * 1000).toString());
     localStorage.setItem('refresh_token', refreshToken);
+    localStorage.setItem('user_id', user_id);
   }
   
 
   // Refresh token endpoint
   async refreshAccessToken(refreshToken) {
     try {
-      const response = await HttpService.post(`${this.apiUrl}/auth/refresh`, { refresh_token: refreshToken });
+      await HttpService.postForAuth(`${this.apiUrl}/auth/refresh`, { refresh_token: refreshToken });
       this.setTokens();
-      return response;
+      return;
     } catch (error) {
       // Handle error, e.g., redirect to login
       console.error('Error refreshing access token:', error);
@@ -46,14 +48,7 @@ class UserService {
   async login(loginInfo) {
     try {
       await HttpService.postForAuth(`${this.apiUrl}/auth/login`, loginInfo);
-      const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
-      const accessTokenValidity = document.cookie.split('; ').find(row => row.startsWith('access_token_expires_in')).split('=')[1];
-      const refreshToken = document.cookie.split('; ').find(row => row.startsWith('refresh_token')).split('=')[1];
-    
-      localStorage.setItem('access_token', accessToken);
-      localStorage.setItem('access_token_expires_in', (Date.now() + Number(accessTokenValidity) * 1000).toString());
-      localStorage.setItem('refresh_token', refreshToken);
-      //this.setTokens();
+      this.setTokens();
       return;
     } catch (error) {
       // Handle error, e.g., redirect to login
