@@ -13,13 +13,13 @@ using System.Text;
 
 namespace SpotifyService.Services
 {
-    // TODO: Create caching mechanism for playback status and queue. Fetch data periodically and send that to requesting user.
+    // TODO: Create long term storing mechanism for playback status and queue. (Store last active playback, so the frontend knows which track was played last)
+    // TODO: Maybe make a new apiUrlBase, so it does not have to be given to every apiUrl explicitly
     public class PlaybackService : SpotifyService.SpotifyServiceBase
     {   
         // This DEVICE_ID is the Spotify device ID of the home server, to obtain it run: 
         // curl --request GET \
-        //--url https://api.spotify.com/v1/me/player/devices \
-        //--header 'Authorization: Bearer 1POdFZRZbvb...qqillRxMr2z'
+        //--url https://api.spotify.com/v1/me/player/devices
         private string DEVICE_ID = Environment.GetEnvironmentVariable("SPOTIFY_DEVICE_ID");
         private readonly ILogger<PlaybackService> _logger;
         private readonly ISpotifyTokenManager _tokenManager;
@@ -38,7 +38,7 @@ namespace SpotifyService.Services
             string accessToken = await _tokenManager.GetValidAccessTokenAsync();
 
             // Make a request to the Spotify API to get track information
-            var trackId = request.TrackId; // Assuming the TrackInfoRequest message has a field named TrackId
+            var trackId = request.TrackId;
             var apiUrl = $"https://api.spotify.com/v1/tracks/{trackId}";
 
             using (var httpClient = _httpClientFactory.CreateClient("SpotifyApiClient"))
