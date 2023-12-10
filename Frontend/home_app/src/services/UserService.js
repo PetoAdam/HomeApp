@@ -5,10 +5,22 @@ class UserService {
   // Use the default API base URL
   apiUrl = 'https://homeapp.ddns.net/api/users';
 
+  setTokens = () => {
+    const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
+    const accessTokenValidity = document.cookie.split('; ').find(row => row.startsWith('access_token_expires_in')).split('=')[1];
+    const refreshToken = document.cookie.split('; ').find(row => row.startsWith('refresh_token')).split('=')[1];
+  
+    localStorage.setItem('access_token', accessToken);
+    localStorage.setItem('access_token_expires_in', (Date.now() + Number(accessTokenValidity) * 1000).toString());
+    localStorage.setItem('refresh_token', refreshToken);
+  }
+  
+
   // Refresh token endpoint
   async refreshAccessToken(refreshToken) {
     try {
       const response = await HttpService.post(`${this.apiUrl}/auth/refresh`, { refresh_token: refreshToken });
+      this.setTokens();
       return response;
     } catch (error) {
       // Handle error, e.g., redirect to login
@@ -20,8 +32,9 @@ class UserService {
   // Google authentication endpoint
   async googleAuth(code) {
     try {
-      const response = await HttpService.get(`${this.apiUrl}/auth/google?code=${code}`);
-      return response;
+      await HttpService.getForAuth(`${this.apiUrl}/auth/google?code=${code}`);
+      this.setTokens();
+      return;
     } catch (error) {
       // Handle error, e.g., redirect to login
       console.error('Error with Google authentication:', error);
@@ -32,8 +45,16 @@ class UserService {
   // Login endpoint
   async login(loginInfo) {
     try {
-      const response = await HttpService.post(`${this.apiUrl}/auth/login`, loginInfo);
-      return response;
+      await HttpService.postForAuth(`${this.apiUrl}/auth/login`, loginInfo);
+      const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
+      const accessTokenValidity = document.cookie.split('; ').find(row => row.startsWith('access_token_expires_in')).split('=')[1];
+      const refreshToken = document.cookie.split('; ').find(row => row.startsWith('refresh_token')).split('=')[1];
+    
+      localStorage.setItem('access_token', accessToken);
+      localStorage.setItem('access_token_expires_in', (Date.now() + Number(accessTokenValidity) * 1000).toString());
+      localStorage.setItem('refresh_token', refreshToken);
+      //this.setTokens();
+      return;
     } catch (error) {
       // Handle error, e.g., redirect to login
       console.error('Error with login:', error);
@@ -44,8 +65,9 @@ class UserService {
   // Signup endpoint
   async signup(loginInfo) {
     try {
-      const response = await HttpService.post(`${this.apiUrl}/auth/signup`, loginInfo);
-      return response;
+      await HttpService.postForAuth(`${this.apiUrl}/auth/signup`, loginInfo);
+      this.setTokens();
+      return;
     } catch (error) {
       // Handle error, e.g., redirect to login
       console.error('Error with signup:', error);

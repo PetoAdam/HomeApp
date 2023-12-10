@@ -3,7 +3,7 @@ import HttpService from './HttpService';
 class SpeakerService {
 
   // Use the default API base URL
-  apiUrl = 'homeapp.ddns.net/api/speakers';
+  apiUrl = 'https://homeapp.ddns.net/api/speakers';
 
   // List pairable devices endpoint
   async listPairableDevices() {
@@ -45,6 +45,7 @@ class SpeakerService {
   async listConnectedSpeakers() {
     try {
       const response = await HttpService.get(`${this.apiUrl}/connected`);
+      console.log('Raw response from listConnectedSpeakers:', response);
       return response;
     } catch (error) {
       // Handle error, e.g., redirect to login

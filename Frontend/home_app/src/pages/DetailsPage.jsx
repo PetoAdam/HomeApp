@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DataCard from '../components/DataCard';
 import LineChartContainer from '../components/LineChartContainer';
+import DeviceService from '../services/DeviceService';
 
 const DetailsPage = () => {
   const [devices, setDevices] = useState([]);
@@ -9,12 +10,9 @@ const DetailsPage = () => {
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const res = await fetch('https://homeapp.ddns.net/api/devices');
-        if (!res.ok) {
-          throw new Error(res.statusText);
-        }
-        const json = await res.json();
-        setDevices(json);
+        // Use the DeviceService to fetch devices directly
+        const devices = await DeviceService.listDevices();
+        setDevices(devices);
       } catch (err) {
         console.error(err);
       }
@@ -29,7 +27,7 @@ const DetailsPage = () => {
   };
 
   return (
-    <div style={{ marginTop: "100px" }}>
+    <div style={{ marginTop: '100px' }}>
       {devices.map((device) => (
         <React.Fragment key={device.id}>
           <DataCard

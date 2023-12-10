@@ -1,16 +1,16 @@
 class HttpService {
   
-    // Helper function to get access token from cookies
+    // Helper function to get access token from localStorage
     getAccessToken() {
-      return document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
+      return localStorage.getItem('access_token');
     }
-  
-    // Helper function to get access token expiration from cookies
+
+    // Helper function to get access token expiration from localStorage
     getAccessTokenExpiration() {
-      const expiresIn = document.cookie.split('; ').find(row => row.startsWith('access_token_expires_in')).split('=')[1];
-      return Number(expiresIn);
+      const expiresIn = localStorage.getItem('access_token_expires_in');
+      return expiresIn ? Number(expiresIn) : 0;
     }
-  
+
     // Helper function to handle API responses
     handleResponse(response) {
       if (!response.ok) {
@@ -18,7 +18,7 @@ class HttpService {
       }
       return response.json();
     }
-  
+
     // Refresh the access token using the refresh token
     async refreshToken(refreshToken) {
       const refreshResponse = await fetch('https://homeapp.ddns.net/api/users/auth/refresh', {
@@ -28,29 +28,29 @@ class HttpService {
         },
         body: JSON.stringify({ refresh_token: refreshToken }),
       });
-  
+
       if (!refreshResponse.ok) {
         // Handle refresh failure, redirect to login or handle as needed
         window.location.href = 'https://homeapp.ddns.net/profile';
       }
-  
+
       const tokenData = await this.handleResponse(refreshResponse);
-  
-      // Set new access token in cookies
-      const expirationTime = Date.now() + tokenData.accessTokenValidity * 1000;
-      document.cookie = `access_token=${tokenData.accessToken}; expires=${new Date(expirationTime).toUTCString()}; path=/`;
-  
+
+      // Set new access token in localStorage
+      localStorage.setItem('access_token', tokenData.accessToken);
+      localStorage.setItem('access_token_expires_in', (Date.now() + tokenData.accessTokenValidity * 1000).toString());
+
       return tokenData.accessToken;
     }
-  
+
     // Handle token expiration and refresh
     async handleToken() {
       const expirationTime = this.getAccessTokenExpiration();
-  
+
       if (!this.getAccessToken() || expirationTime < Date.now() + 60000) {
         // Token expired or not present, try to refresh
-        const refreshToken = document.cookie.split('; ').find(row => row.startsWith('refresh_token')).split('=')[1];
-  
+        const refreshToken = localStorage.getItem('refresh_token');
+
         if (refreshToken) {
           return this.refreshToken(refreshToken);
         } else {
@@ -59,7 +59,7 @@ class HttpService {
           return null;
         }
       }
-  
+
       return this.getAccessToken();
     }
   
@@ -138,6 +138,39 @@ class HttpService {
         } catch (error) {
           // Handle network or request errors
           console.error('Error making DELETE request:', error);
+          // Redirect to error page or handle as needed
+          throw error;
+        }
+      }
+
+      async getForAuth(url) {
+        try {
+          await fetch(url, {
+          });
+    
+          return;
+        } catch (error) {
+          // Handle network or request errors
+          console.error('Error making GET request:', error);
+          // Redirect to error page or handle as needed
+          throw error;
+        }
+      }
+
+      async postForAuth(url, body) {
+        try {
+          await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+          });
+    
+          return;
+        } catch (error) {
+          // Handle network or request errors
+          console.error('Error making POST request:', error);
           // Redirect to error page or handle as needed
           throw error;
         }

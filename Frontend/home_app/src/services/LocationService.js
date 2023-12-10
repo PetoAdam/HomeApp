@@ -3,7 +3,7 @@ import HttpService from './HttpService';
 class LocationService {
 
   // Use the default API base URL
-  apiUrl = 'homeapp.ddns.net/api/locations';
+  apiUrl = 'https://homeapp.ddns.net/api/locations';
 
   // List locations endpoint
   async listLocations() {

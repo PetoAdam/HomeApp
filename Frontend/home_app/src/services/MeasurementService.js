@@ -3,7 +3,7 @@ import HttpService from './HttpService';
 class MeasurementService {
 
   // Use the default API base URL
-  apiUrl = 'homeapp.ddns.net/api/measurements';
+  apiUrl = 'https://homeapp.ddns.net/api/measurements';
 
   // Get current measurement endpoint
   async getCurrentMeasurement(deviceId) {
