@@ -20,6 +20,7 @@ const MapComponent = () => {
     setBackgroundImage(backgroundImg);
   }, []);
 
+
   // Load devices from API endpoint on mount
   useEffect(() => {
     const fetchDevices = async () => {
@@ -107,6 +108,27 @@ const MapComponent = () => {
     }
   };
 
+  // Function to check if the user is using an iOS device
+  const isIOS = () => {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  };
+
+  // Function to calculate the adjusted Y position
+  const calculateAdjustedY = (device) => {
+    if (isIOS()) {
+      // For iOS, adjust the Y position differently
+      return (
+        (document.getElementById('map')?.offsetHeight / 100) * device.location.y * 0.5 - 30 // Currently hard coded, have not properly figured out the exact math (it works for current map)
+      );
+    } else {
+      // For other devices, use the previous calculation
+      return (
+        (document.getElementById('map')?.offsetHeight / 100) * device.location.y -
+        document.getElementById('map')?.offsetHeight / 2
+      );
+    }
+  };
+
   return (
     <div className="container">
       <div
@@ -128,15 +150,10 @@ const MapComponent = () => {
 
             {devices.map((device, index) => (
               <div
-                style={{
-                  transform: `translate(${(
-                    (document.getElementById('map')?.offsetWidth / 100) *
-                    devices[index].location.x
-                  ) ?? 0}px, ${
-                    (document.getElementById('map')?.offsetHeight / 100) *
-                      devices[index].location.y -
-                    document.getElementById('map')?.offsetHeight / 2
-                  }px)`,
+              style={{
+                transform: `translate(${(document.getElementById('map')?.offsetWidth / 100) *
+                  device.location.x}px, ${calculateAdjustedY(device)}px)`,
+                position: `absolute`,
                 }}
                 key={device.name}
               >
