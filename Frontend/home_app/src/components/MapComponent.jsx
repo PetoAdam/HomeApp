@@ -137,6 +137,7 @@ const MapComponent = () => {
                       devices[index].location.y -
                     document.getElementById('map')?.offsetHeight / 2
                   }px)`,
+                  position: `absolute`,
                 }}
                 key={device.name}
               >
