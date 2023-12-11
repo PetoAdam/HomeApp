@@ -118,7 +118,7 @@ const MapComponent = () => {
     if (isIOS()) {
       // For iOS, adjust the Y position differently
       return (
-        (document.getElementById('map')?.offsetHeight / 100) * device.location.y
+        (document.getElementById('map')?.offsetHeight / 100) * device.location.y * 0.5 - 30 // Currently hard coded, have not properly figured out the exact math (it works for current map)
       );
     } else {
       // For other devices, use the previous calculation
