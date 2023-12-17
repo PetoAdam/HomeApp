@@ -28,19 +28,26 @@ class HttpService {
         },
         body: JSON.stringify({ refresh_token: refreshToken }),
       });
-
+    
       if (!refreshResponse.ok) {
         // Handle refresh failure, redirect to login or handle as needed
         window.location.href = 'https://homeapp.ddns.net/profile';
       }
-
-      const tokenData = await this.handleResponse(refreshResponse);
-
-      // Set new access token in localStorage
-      localStorage.setItem('access_token', tokenData.accessToken);
-      localStorage.setItem('access_token_expires_in', (Date.now() + tokenData.accessTokenValidity * 1000).toString());
-
-      return tokenData.accessToken;
+    
+      // Update the access_token cookie with the new value
+      const newAccessTokenCookie = refreshResponse.headers.get('Set-Cookie');
+      if (newAccessTokenCookie) {
+        document.cookie = newAccessTokenCookie;
+      }
+    
+      // Extract the new access token from the cookies and update localStorage
+      const newAccessToken = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
+      const accessTokenValidity = document.cookie.split('; ').find(row => row.startsWith('access_token_expires_in')).split('=')[1];
+    
+      localStorage.setItem('access_token', newAccessToken);
+      localStorage.setItem('access_token_expires_in', (Date.now() + accessTokenValidity * 1000).toString());
+    
+      return newAccessToken;
     }
 
     // Handle token expiration and refresh
