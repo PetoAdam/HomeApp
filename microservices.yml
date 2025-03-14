@@ -1,6 +1,6 @@
 microservices:
   - name: ApiGateway
-    command: dotnet run --project ApiGateway/ApiGateway --configuration Release
+    command: dotnet dev-certs https && dotnet run --project ApiGateway/ApiGateway --configuration Release
 
   - name: DatabaseService
     command: dotnet run --project DatabaseService/DatabaseService --configuration Release
@@ -9,8 +9,8 @@ microservices:
     command: dotnet run --project MQTTService/MQTTService --configuration Release
 
   - name: Frontend
-    command: npm start --prefix Frontend/home_app
-  
+    command: npm run build --prefix Frontend/home_app && serve -s -n Frontend/home_app/build
+
   - name: SpeakerService
     command: python3 SpeakerService/speaker_service.py
 
