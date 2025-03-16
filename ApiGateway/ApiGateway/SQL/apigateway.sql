@@ -1,6 +1,8 @@
-DROP TABLE UserRoles;
-DROP TABLE Roles;
-DROP TABLE Users;
+USE apigateway;
+
+DROP TABLE IF EXISTS UserRoles;
+DROP TABLE IF EXISTS Roles;
+DROP TABLE IF EXISTS Users;
 
 CREATE TABLE Users (
     id INT NOT NULL AUTO_INCREMENT,
@@ -31,7 +33,6 @@ CREATE TABLE UserRoles (
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
-
 
 INSERT INTO Users (user_name, normalized_user_name, email, normalized_email, email_confirmed, password_hash, two_factor_enabled, lockout_end, lockout_enabled, access_failed_count) VALUES ('rasp', 'RASP', 'rasp@rasp.com', 'RASP@RASP.COM', 1, 'F8197C2208C0B2CE0E67817C6BCD95ED48E1F6AD9CE5BE4FEDEDA96E95734FCC', 0, NULL, 0, 0);
 INSERT INTO Roles (name, normalized_name) VALUES ('Admin', 'ADMIN');

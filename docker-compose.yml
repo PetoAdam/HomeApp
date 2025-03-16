@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  apigateway:
+    restart: unless-stopped
+    build:
+      context: ./ApiGateway/ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    restart: unless-stopped
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: apigateway
+      MYSQL_USER: apigateway
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./ApiGateway/ApiGateway/SQL/apigateway.sql:/docker-entrypoint-initdb.d/apigateway.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:

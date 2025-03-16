@@ -11,24 +11,16 @@ using System.Security.Cryptography.X509Certificates;
 var JWT_SIGNING_KEY = Environment.GetEnvironmentVariable("JWT_SIGNING_KEY");
 var ISSUER = "homenavi.org";
 var AUDIENCE = "homenavi.org";
-var HTTPS_PEM = Environment.GetEnvironmentVariable("HTTPS_PEM");
-var HTTPS_KEY_PEM = Environment.GetEnvironmentVariable("HTTPS_KEY_PEM");
-var HTTPS_CERTIFICATE = X509Certificate2.CreateFromPemFile(HTTPS_PEM, HTTPS_KEY_PEM);
 
 Console.WriteLine("Starting ApiGateway...");
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.WebHost.UseKestrel(options =>
 {
-    options.Listen(IPAddress.Any, 5001, listenOptions =>
-    {
-        listenOptions.UseHttps(HTTPS_CERTIFICATE);
-    });
+    options.Listen(IPAddress.Any, 5000);
 });
-
 builder.Services.AddEntityFrameworkMySQL().AddDbContext<ApplicationDbContext>(options => {
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
