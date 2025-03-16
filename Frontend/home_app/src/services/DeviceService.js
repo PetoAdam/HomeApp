@@ -3,7 +3,7 @@ import HttpService from './HttpService';
 class DeviceService {
 
   // Use the default API base URL
-  apiUrl = 'https://homeapp.ddns.net/api/devices';
+  apiUrl = 'https://homenavi.org/api/devices';
 
   // List devices endpoint
   async listDevices() {

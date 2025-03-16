@@ -1,7 +1,7 @@
 import HttpService from './HttpService';
 
 class SpotifyService {
-  apiUrl = 'https://homeapp.ddns.net/api/spotify';
+  apiUrl = 'https://homenavi.org/api/spotify';
 
   async getTrackInfo(trackId) {
     try {

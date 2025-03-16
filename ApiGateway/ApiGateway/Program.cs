@@ -9,8 +9,8 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
 var JWT_SIGNING_KEY = Environment.GetEnvironmentVariable("JWT_SIGNING_KEY");
-var ISSUER = "homeapp.ddns.net";
-var AUDIENCE = "homeapp.ddns.net";
+var ISSUER = "homenavi.org";
+var AUDIENCE = "homenavi.org";
 var HTTPS_PEM = Environment.GetEnvironmentVariable("HTTPS_PEM");
 var HTTPS_KEY_PEM = Environment.GetEnvironmentVariable("HTTPS_KEY_PEM");
 var HTTPS_CERTIFICATE = X509Certificate2.CreateFromPemFile(HTTPS_PEM, HTTPS_KEY_PEM);

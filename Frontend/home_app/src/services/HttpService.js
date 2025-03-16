@@ -21,7 +21,7 @@ class HttpService {
 
     // Refresh the access token using the refresh token
     async refreshToken(refreshToken) {
-      const refreshResponse = await fetch('https://homeapp.ddns.net/api/users/auth/refresh', {
+      const refreshResponse = await fetch('https://homenavi.org/api/users/auth/refresh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ class HttpService {
     
       if (!refreshResponse.ok) {
         // Handle refresh failure, redirect to login or handle as needed
-        window.location.href = 'https://homeapp.ddns.net/profile';
+        window.location.href = 'https://homenavi.org/profile';
       }
     
       // Update the access_token cookie with the new value
@@ -62,7 +62,7 @@ class HttpService {
           return this.refreshToken(refreshToken);
         } else {
           // No refresh token, redirect to profile or handle as needed
-          window.location.href = 'https://homeapp.ddns.net/profile';
+          window.location.href = 'https://homenavi.org/profile';
           return null;
         }
       }

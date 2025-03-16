@@ -3,7 +3,7 @@ import React from 'react';
 class StreamPage extends React.Component {
   render() {
     // Replace streamUrl with the actual IP address or hostname of your ESP32 camera, make sure that NGINX is configured properly if necessary.
-    const streamUrl = 'https://homeapp.ddns.net/cam';
+    const streamUrl = 'https://homenavi.org/cam';
 
     return (
       <div

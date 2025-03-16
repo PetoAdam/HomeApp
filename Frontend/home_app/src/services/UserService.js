@@ -3,7 +3,7 @@ import HttpService from './HttpService';
 class UserService {
 
   // Use the default API base URL
-  apiUrl = 'https://homeapp.ddns.net/api/users';
+  apiUrl = 'https://homenavi.org/api/users';
 
   setTokens = () => {
     const accessToken = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
