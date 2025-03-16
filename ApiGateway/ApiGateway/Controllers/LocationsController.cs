@@ -23,7 +23,7 @@ namespace ApiGateway.Controllers
         public LocationsController(Dal.ApplicationDbContext dbContext)
         {
             this._context = dbContext;
-            this._channel = GrpcChannel.ForAddress("http://localhost:5043");
+            this._channel = GrpcChannel.ForAddress("http://databaseservice:5043");
             this._client = new Grpc.LocationService.LocationServiceClient(this._channel);
         }
 

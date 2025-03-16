@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS `apigateway`;
+
 USE apigateway;
 
 DROP TABLE IF EXISTS UserRoles;

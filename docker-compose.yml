@@ -16,16 +16,30 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - homenet
+
+  databaseservice:
+    restart: unless-stopped
+    build:
+      context: ./DatabaseService/DatabaseService
+      dockerfile: Dockerfile
+    ports:
+      - "5043:5043"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - homenet
 
   db:
     restart: unless-stopped
     image: mysql:8.0
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: apigateway
-      MYSQL_USER: apigateway
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
     ports:
       - "3306:3306"
     volumes:
@@ -37,6 +51,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - homenet
   
   mqtt:
     image: eclipse-mosquitto:2.0
@@ -47,6 +63,8 @@ services:
       - "1883:1883"
       - "9001:9001"
     command: "mosquitto -c /mosquitto-no-auth.conf"
+    networks:
+      - homenet
 
   zigbee2mqtt:
     container_name: zigbee2mqtt
@@ -61,6 +79,20 @@ services:
       - TZ=Europe/Berlin
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
+    networks:
+      - homenet
+
+  frontend:
+    build:
+      context: ./Frontend/home_app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - homenet
 
 volumes:
   db_data:
+
+networks:
+  homenet:

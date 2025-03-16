@@ -22,7 +22,7 @@ namespace ApiGateway.Controllers
         public DevicesController(Dal.ApplicationDbContext dbContext)
         {
             this._context = dbContext;
-            this._channel = GrpcChannel.ForAddress("http://localhost:5043");
+            this._channel = GrpcChannel.ForAddress("http://databaseservice:5043");
             this._client = new Grpc.DeviceService.DeviceServiceClient(this._channel);
         }
 
