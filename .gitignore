@@ -369,4 +369,4 @@ FodyWeavers.xsd
 **/database.db
 **/state.json
 dump.sql
-zigbee2mqtt/zigbee2mqtt/zigbee2mqtt-data/coordinator_backup.json
+**/coordinator_backup.json
