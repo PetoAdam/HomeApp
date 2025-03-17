@@ -366,3 +366,7 @@ FodyWeavers.xsd
 
 # .vscode
 .vscode/
+**/database.db
+**/state.json
+dump.sql
+zigbee2mqtt/zigbee2mqtt/zigbee2mqtt-data/coordinator_backup.json

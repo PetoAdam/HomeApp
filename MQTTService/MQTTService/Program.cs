@@ -10,6 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpc();
 builder.Services.AddSingleton<MqttClientService>();
 
+// Configure Kestrel to listen on ports 5044
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5044);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
