@@ -18,7 +18,7 @@ builder.Services.AddEntityFrameworkMySQL().AddDbContext<ApplicationDbContext>(op
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// Configure Kestrel to listen on ports 5043 and 7043
+// Configure Kestrel to listen on ports 5043
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(5043);

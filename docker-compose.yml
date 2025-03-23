@@ -106,6 +106,38 @@ services:
     networks:
       - homenet
 
+  spotifyservice:
+    restart: unless-stopped
+    build:
+      context: ./SpotifyService/SpotifyService
+      dockerfile: Dockerfile
+    ports:
+      - "5045:5045"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - SPOTIFY_REFRESH_TOKEN=${SPOTIFY_REFRESH_TOKEN}
+      - SPOTIFY_DEVICE_ID=${SPOTIFY_DEVICE_ID}
+      - SPOTIFY_DEFAULT_TRACK_ID=${SPOTIFY_DEFAULT_TRACK_ID}
+    networks:
+      - homenet
+
+  speakerservice:
+    build:
+      context: ./SpeakerService
+      dockerfile: Dockerfile
+    ports:
+      - "5046:5046"
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket  # Use host's D-Bus socket
+      - /dev/bus/usb:/dev/bus/usb
+      - /run/systemd/system:/run/systemd/system:ro   # Mount host systemd socket (read-only)
+      - ${HOME}/.asoundrc:/home/ubuntu/.asoundrc # Mount host asoundrc file
+    restart: unless-stopped
+
 volumes:
   db_data:
 

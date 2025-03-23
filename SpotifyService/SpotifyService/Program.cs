@@ -17,6 +17,11 @@ builder.Services.AddHttpClient("SpotifyApiClient");
 // Currently using Authorization code flow to access user's playback data
 builder.Services.AddScoped<ISpotifyTokenManager, AuthorizationCodeSpotifyTokenManager>();
 
+// Configure Kestrel to listen on ports 5045
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5045);
+});
 
 var app = builder.Build();
 

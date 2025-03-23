@@ -20,7 +20,7 @@ namespace ApiGateway.Controllers
 
         public SpotifyController()
         {
-            _channel = GrpcChannel.ForAddress("http://localhost:5045");
+            _channel = GrpcChannel.ForAddress("http://spotifyservice:5045");
             _spotifyClient = new Grpc.SpotifyService.SpotifyServiceClient(_channel);
         }
 

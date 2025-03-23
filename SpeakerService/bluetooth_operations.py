@@ -3,18 +3,25 @@ import time
 import configparser
 
 def list_connected_speakers():
-    output = subprocess.check_output(['bluetoothctl', 'devices'], universal_newlines=True)
-    lines = output.split('\n')
-    speakers = []
-    for line in lines:
-        if 'Device' in line:
-            device_info = line.split('Device ')[1].split(' ')
-            device_address = device_info[0]
-            device_name = ' '.join(device_info[1:])
-            device_type = subprocess.check_output(['bluetoothctl', 'info', device_address], universal_newlines=True)
-            if("Audio Sink" in device_type and "Connected: yes" in device_type):
-                speakers.append({'address': device_address, 'name': device_name})
-    return speakers
+    try:
+        output = subprocess.check_output(['bluetoothctl', 'devices'], universal_newlines=True)
+        lines = output.split('\n')
+        speakers = []
+        for line in lines:
+            if 'Device' in line:
+                device_info = line.split('Device ')[1].split(' ')
+                device_address = device_info[0]
+                device_name = ' '.join(device_info[1:])
+                device_type = subprocess.check_output(['bluetoothctl', 'info', device_address], universal_newlines=True)
+                if("Audio Sink" in device_type and "Connected: yes" in device_type):
+                    speakers.append({'address': device_address, 'name': device_name})
+        return speakers
+    except subprocess.CalledProcessError as e:
+        print(f"Error listing connected speakers: {str(e)}")
+        return []
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return []
 
 def save_last_connected_device(device_address):
     config = configparser.ConfigParser()
@@ -65,7 +72,10 @@ def connect_device(device_address):
         else:
             return False
     except subprocess.CalledProcessError as e:
-        # If an error occurred while running the command, return False
+        print(f"Error connecting to device: {str(e)}")
+        return False
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
         return False
     
 def disconnect_device(device_address):
