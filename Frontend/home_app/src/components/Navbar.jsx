@@ -9,7 +9,7 @@ const Navbar = ({ menuOpen, toggleMenu }) => {
 
   const handleZigbeeClick = () => {
     // Redirect the user to the external URL
-    window.location.href = 'https://homeapp.ddns.net/mqtt/';
+    window.location.href = 'https://homenavi.org/mqtt/';
   };
 
   return (

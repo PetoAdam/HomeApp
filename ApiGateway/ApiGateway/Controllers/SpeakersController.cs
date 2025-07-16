@@ -16,7 +16,7 @@ namespace ApiGateway.Controllers
 
         public SpeakersController()
         {
-            _channel = GrpcChannel.ForAddress("http://localhost:5046");
+            _channel = GrpcChannel.ForAddress("http://172.17.0.1:5046");
             _client = new Grpc.SpeakerService.SpeakerServiceClient(_channel);
         }
 

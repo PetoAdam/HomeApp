@@ -1,0 +1,17 @@
+permit_join: true
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://mqtt
+serial:
+  port: /dev/ttyACM0
+frontend:
+  port: 8081
+devices:
+  '0xb4e84287377c0000':
+    friendly_name: '0xb4e84287377c0000'
+  '0x00124b002a50aa42':
+    friendly_name: '0x00124b002a50aa42'
+  '0x00124b0029112797':
+    friendly_name: '0x00124b0029112797'
+  '0x00124b0029112799':
+    friendly_name: '0x00124b0029112799'

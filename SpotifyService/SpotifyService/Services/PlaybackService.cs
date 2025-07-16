@@ -160,6 +160,7 @@ namespace SpotifyService.Services
                 {
                     var response = await httpClient.PutAsync(playUrl, null);
 
+                    // TODO: Check if the response is 202 (Accepted) or 204 (No Content)
                     if (response.StatusCode != HttpStatusCode.Accepted)
                     {
                         throw new RpcException(new Status(StatusCode.Internal, "Error while continuing playback"));

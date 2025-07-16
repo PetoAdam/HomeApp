@@ -25,9 +25,13 @@ class SpeakerServiceServer(SpeakerServiceServicer):
         connect_success = bluetooth_operations.connect_device(device_address)
         if(connect_success):
             print("Successfully connected to device ", device_address)
-            self.update_asoundrc(device_address)
-            bluetooth_operations.save_last_connected_device(device_address)
-            self.restart_spotifyd()
+            try:
+                self.update_asoundrc(device_address)
+                bluetooth_operations.save_last_connected_device(device_address)
+                self.restart_spotifyd()
+            except Exception as e:
+                print(f"Error during post-connection operations: {str(e)}")
+                connect_success = False
         else:
             print("Connection not successful to device ", device_address)
         response = speaker_pb2.ConnectDeviceResponse(success=connect_success)
@@ -46,9 +50,13 @@ class SpeakerServiceServer(SpeakerServiceServicer):
 
     def ListConnectedSpeakers(self, request, context):
         print("Listing connected devices...")
-        speakers = bluetooth_operations.list_connected_speakers()
-        print(speakers)
-        response = speaker_pb2.ListConnectedSpeakersResponse(speakers=speakers)
+        try:
+            speakers = bluetooth_operations.list_connected_speakers()
+            print(speakers)
+            response = speaker_pb2.ListConnectedSpeakersResponse(speakers=speakers)
+        except Exception as e:
+            print(f"Error listing connected speakers: {str(e)}")
+            response = speaker_pb2.ListConnectedSpeakersResponse(speakers=[])
         return response
     
     def update_asoundrc(self, device_address):

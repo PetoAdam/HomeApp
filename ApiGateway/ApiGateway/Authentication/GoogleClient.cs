@@ -8,7 +8,7 @@ namespace ApiGateway.Authentication
 {
     public class GoogleClient
     {
-        string REDIRECT_URI = "https://homeapp.ddns.net/api/users/auth/google";
+        string REDIRECT_URI = "https://homenavi.org/api/users/auth/google";
 
         // Exchange the one-time use token for a Google access token
         // You can use the Google.Apis.Auth.OAuth2 library to do this

@@ -60,7 +60,7 @@ namespace MQTTService.Services
             using (var mqttClient = mqttFactory.CreateMqttClient())
             {
                 var mqttClientOptions = new MqttClientOptionsBuilder()
-                    .WithTcpServer("localhost")
+                    .WithTcpServer("mqtt")
                     .Build();
 
                 await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);

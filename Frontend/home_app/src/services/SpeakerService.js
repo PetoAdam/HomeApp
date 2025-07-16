@@ -3,7 +3,7 @@ import HttpService from './HttpService';
 class SpeakerService {
 
   // Use the default API base URL
-  apiUrl = 'https://homeapp.ddns.net/api/speakers';
+  apiUrl = 'https://homenavi.org/api/speakers';
 
   // List pairable devices endpoint
   async listPairableDevices() {

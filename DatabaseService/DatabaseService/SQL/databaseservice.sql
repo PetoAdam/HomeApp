@@ -1,6 +1,10 @@
-DROP TABLE Measurements;
-DROP TABLE Devices;
-DROP TABLE Locations;
+CREATE DATABASE IF NOT EXISTS `databaseservice`;
+
+use databaseservice;
+
+DROP TABLE IF EXISTS Measurements;
+DROP TABLE IF EXISTS Devices;
+DROP TABLE IF EXISTS Locations;
 
 CREATE TABLE Locations (
     id INT AUTO_INCREMENT PRIMARY KEY,

@@ -28,7 +28,7 @@ namespace MQTTService.MqttService
         {
             this.logger = logger;
 
-            this.grpcChannel = GrpcChannel.ForAddress("http://localhost:5043");
+            this.grpcChannel = GrpcChannel.ForAddress("http://databaseservice:5043");
             this.grpcClient = new MeasurementService.MeasurementServiceClient(this.grpcChannel);
 
             mqttClient = new MqttFactory().CreateMqttClient();

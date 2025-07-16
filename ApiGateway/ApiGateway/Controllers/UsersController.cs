@@ -92,14 +92,14 @@ namespace ApiGateway.Controllers
 
             if (string.IsNullOrEmpty(accessToken))
             {
-                return new RedirectResult("http://homeapp.ddns.net/profile");
+                return new RedirectResult("http://homenavi.org/profile");
             }
 
             // Get the user's Google profile
             var profile = await googleClient.GetProfileAsync(accessToken);
             if (profile == null)
             {
-                return new RedirectResult("http://homeapp.ddns.net/profile");
+                return new RedirectResult("http://homenavi.org/profile");
             }
 
             // Check if the user exists in the database
@@ -146,7 +146,7 @@ namespace ApiGateway.Controllers
             Response.Cookies.Append("user_id", user.Id.ToString());
 
             // Return the JWT token
-            return new RedirectResult("http://homeapp.ddns.net/profile");
+            return new RedirectResult("http://homenavi.org/profile");
         }
 
         [HttpPost("auth/login")]
@@ -300,8 +300,8 @@ namespace ApiGateway.Controllers
         private string GenerateJwtToken(IEnumerable<Claim> claims, DateTime expiration)
         {
             var jwtToken = new JwtSecurityToken(
-                issuer: "homeapp.ddns.net",
-                audience: "homeapp.ddns.net",
+                issuer: "homenavi.org",
+                audience: "homenavi.org",
                 claims: claims,
                 expires: expiration,
                 signingCredentials: new SigningCredentials(
@@ -321,7 +321,7 @@ namespace ApiGateway.Controllers
             // Currently only checks if the refresh token is valid and creates an access token based off the data of the refresh token
 
             // Check if the refresh token is not expired
-            if (refreshToken == null || refreshToken.ValidTo < DateTime.UtcNow || refreshToken.Issuer != "homeapp.ddns.net")
+            if (refreshToken == null || refreshToken.ValidTo < DateTime.UtcNow || refreshToken.Issuer != "homenavi.org")
             {
                 return false;
             }
